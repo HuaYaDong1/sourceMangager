@@ -124,7 +124,7 @@ QString sourceInterface::setPingToWidget(QString sourceName)
     ping.start(str);//执行ping
 
 
-    ping.waitForFinished(1000);
+    ping.waitForFinished(-1);
     QString pingStr =  ping.readAll();
     if(pingStr.contains("time=")){
         QString str = pingStr.split("time=").at(1);
@@ -135,9 +135,8 @@ QString sourceInterface::setPingToWidget(QString sourceName)
         }
     }
     else{
-        ret.append("0ms");
+        ret.append("N/A");
     }
-
 
     qDebug()<<"ret="<<ret;
     return ret;
