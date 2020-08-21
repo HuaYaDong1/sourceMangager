@@ -1,5 +1,6 @@
 #! [0]
 DEFINES += PLATFORM_TYPE
 TEMPLATE    =   subdirs
-SUBDIRS     =   src/sourceManager.pro
+SUBDIRS     =   ./src/sourceManager.pro \
+                ./sourceMangerService/softSourceManager.pro
 

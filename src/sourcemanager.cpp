@@ -8,6 +8,7 @@
 #include "delayrefreshthread.h"
 #include <QDBusInterface>
 #include <QVariantList>
+#include <QDBusPendingCall>
 
 
 sourceManager::sourceManager(QWidget *parent)
@@ -184,9 +185,9 @@ void sourceManager::questionMessage()
                                       tr("delete ?"),
                                       QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
 
-        QDBusInterface *serviceInterface = new QDBusInterface("com.kylin.runtime",
-                                                              "/com/kylin/runtime",
-                                                              "com.kylin.runtime.interface",
+        QDBusInterface *serviceInterface = new QDBusInterface("com.softSource.manager",
+                                                              "/com/softSource/Manager",
+                                                              "com.softSource.manager.interface",
                                                               QDBusConnection::systemBus());
         if(!serviceInterface->isValid())
         {
@@ -212,7 +213,7 @@ void sourceManager::questionMessage()
                             << QVariant::fromValue(pwig->ui->address_Label->text());
             }
 
-            serviceInterface->asyncCall("getAppMsg", sourceDelete);
+            serviceInterface->asyncCall("deleteSource", sourceDelete);
             delete delete_item;
             deleteFlag = 0;
         }else if (reply == QMessageBox::No){
@@ -225,9 +226,9 @@ void sourceManager::addBtnClicked()
 {
     qDebug()<<"~~~~~~";
 
-    QDBusInterface *serviceInterface = new QDBusInterface("com.kylin.runtime",
-                                                          "/com/kylin/runtime",
-                                                          "com.kylin.runtime.interface",
+    QDBusInterface *serviceInterface = new QDBusInterface("com.softSource.manager",
+                                                          "/com/softSource/Manager",
+                                                          "com.softSource.manager.interface",
                                                           QDBusConnection::systemBus());
     if(!serviceInterface->isValid())
     {
@@ -253,8 +254,8 @@ void sourceManager::addBtnClicked()
                     << QVariant::fromValue(ui->addLineEdit->text());
     }
 
-    serviceInterface->asyncCall("getAppMsg", sourceDelete);
-    ui->addLineEdit->text().clear();
+    serviceInterface->asyncCall("addSource", sourceDelete);
+    ui->addLineEdit->setText("");
 }
 
 void sourceManager::addForListwidget(QListWidget *ListWidget, QString address)
