@@ -150,7 +150,6 @@ void sourceManager::refreshBtnClicked()
 //单击选中item回调
 void sourceManager::selectDeleteIteam(QListWidgetItem *item)
 {
-    spend = sourceinterface->getDownloadSpeedFromSource();
     sourceInformationWidget* pwig =static_cast<sourceInformationWidget*> (selectWidget->itemWidget(item));
     if(pwig->ui->address_Label->text().compare("address") == 0)
     {

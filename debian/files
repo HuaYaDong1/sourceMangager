@@ -1,0 +1,3 @@
+sourcemanager-dbgsym_0.0.1kord_amd64.ddeb universe/debug optional automatic=yes
+sourcemanager_0.0.1kord_amd64.buildinfo universe/admin optional
+sourcemanager_0.0.1kord_amd64.deb universe/admin optional
