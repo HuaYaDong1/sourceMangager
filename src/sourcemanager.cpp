@@ -126,7 +126,6 @@ void sourceManager::fillInTheData(QListWidget *ListWidget,
 //填充动态数据延时 //下载速度
 void sourceManager::fillInTheDynamicData(QListWidget *ListWidget, int num)
 {
-    //spend = "111/kb";
     for(int i = 1; i < num+1; i++){
         QListWidgetItem *item = ListWidget->item(i);
         sourceInformationWidget* pwig = static_cast<sourceInformationWidget*> (ListWidget->itemWidget(item));
@@ -140,6 +139,7 @@ void sourceManager::fillInTheDynamicData(QListWidget *ListWidget, int num)
 void sourceManager::refreshBtnClicked()
 {
     spend = sourceinterface->getDownloadSpeedFromSource();
+    qDebug()<<"~~~~~~~~刷新~~~~~~~~~~~~~~~~~:"<<spend;
     fillInTheDynamicData(ui->listWidget, ui->listWidget->count()-1);
     for(int i = 0; i < pageNum; i++)
     {
