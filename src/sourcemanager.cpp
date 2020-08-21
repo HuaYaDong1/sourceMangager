@@ -216,6 +216,7 @@ void sourceManager::questionMessage()
             serviceInterface->asyncCall("deleteSource", sourceDelete);
             delete delete_item;
             deleteFlag = 0;
+            ui->label_2->setText("");
         }else if (reply == QMessageBox::No){
         }else{}
     }
@@ -255,7 +256,9 @@ void sourceManager::addBtnClicked()
     }
 
     serviceInterface->asyncCall("addSource", sourceDelete);
+    addForListwidget(selectWidget, ui->addLineEdit->text());
     ui->addLineEdit->setText("");
+
 }
 
 void sourceManager::addForListwidget(QListWidget *ListWidget, QString address)
