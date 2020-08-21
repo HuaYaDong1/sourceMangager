@@ -27,7 +27,8 @@ private slots:
     void deleteBtnClicked();
     void SourceBtnClicked();
     void refreshBtnClicked();
-
+    void addBtnClicked();
+    void addForListwidget(QListWidget *ListWidget, QString address);
 
 private:
     Ui::sourceManager *ui;

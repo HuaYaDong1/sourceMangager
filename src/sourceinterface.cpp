@@ -203,10 +203,10 @@ int  sourceInterface::getPacketsFromNetwork()
 }
 
 
-void sourceInterface::deleteSource(QString sourceName,QString sourceType,QString sourceFileName)
+void sourceInterface::deleteSource(QString sourceName, QString sourceFileName)
 {
     //root
-
+    qDebug()<<sourceName<<"    "<<sourceFileName;
     QFile file(sourceFileName);
     file.open(QIODevice::ReadWrite | QIODevice::Text);
     QString s;
@@ -215,8 +215,9 @@ void sourceInterface::deleteSource(QString sourceName,QString sourceType,QString
     while(!t.atEnd())
     {
         line = t.readLine();
-        if(line.compare(sourceType+" "+sourceName) == 0)
+        if(line.compare(sourceName) != 0){
             s.append(line + "\n");
+        }
     }
     file.resize(0);
     t << s;
@@ -224,14 +225,14 @@ void sourceInterface::deleteSource(QString sourceName,QString sourceType,QString
 }
 
 
-void sourceInterface::addSource(QString sourceName,QString sourceType,QString sourceFileName)
+void sourceInterface::addSource(QString sourceName, QString sourceFileName)
 {
     //root
 
     QFile file(sourceFileName);
     file.open(QIODevice::ReadWrite | QIODevice::Append);
 
-    file.write(QString(sourceType + " " + sourceName + "\n").toLatin1());
+    file.write(QString(sourceName + "\n").toLatin1());
     file.close();
 
 }

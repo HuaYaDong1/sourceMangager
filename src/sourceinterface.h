@@ -29,8 +29,8 @@ public:
     QStringList getSourceTypeList(QString fileName);
     QString getDownloadSpeedFromSource();
     int getPacketsFromNetwork();
-    void deleteSource(QString sourceName,QString sourceType,QString sourceFileName);
-    void addSource(QString sourceName,QString sourceType,QString sourceFileName);
+    void deleteSource(QString sourceName, QString sourceFileName);
+    void addSource(QString sourceName, QString sourceFileName);
 
 
 
