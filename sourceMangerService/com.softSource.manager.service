@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=com.softSource.manager
+Exec=/usr/bin/softsourcemanager
+User=root
