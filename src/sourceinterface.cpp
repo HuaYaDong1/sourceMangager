@@ -74,7 +74,12 @@ QStringList sourceInterface::getSourceTypeList(QString fileName)
     QTextStream in(&file);
     QString line = in.readLine();
     if((line.left(1).compare("#") !=0) && (line.compare("") !=0)){
-        typeList<<line;
+        if(line.contains(" "))
+        {
+            QStringList list = line.split(" ");
+            qDebug()<<list<<"----";
+            typeList << list.at(0);
+        }
     }
     while(!line.isNull())//字符串有内容
     {
@@ -82,8 +87,8 @@ QStringList sourceInterface::getSourceTypeList(QString fileName)
         if((line.left(1).compare("#") !=0) && (line.compare("") !=0)){
             if(line.contains(" "))
             {
-                QStringList list = line.split(" ");
-                typeList << list.at(0);
+                QStringList list2 = line.split(" ");
+                typeList << list2.at(0);
             }
         }
     }
