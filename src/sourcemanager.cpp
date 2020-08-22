@@ -17,7 +17,8 @@ sourceManager::sourceManager(QWidget *parent)
 {
     ui->setupUi(this);
     sourceinterface = new sourceInterface;
-    spend = sourceinterface->getDownloadSpeedFromSource();
+//    spend =
+    sourceinterface->getDownloadSpeedFromSource();
     deleteFlag = 0;
     connect(ui->listWidget,SIGNAL(itemClicked(QListWidgetItem*)),this,SLOT(selectDeleteIteam(QListWidgetItem*)));
     connect(ui->mainSourseBtn, SIGNAL(clicked()), this, SLOT(SourceBtnClicked()) );
@@ -31,11 +32,19 @@ sourceManager::sourceManager(QWidget *parent)
     ui->listWidget->setObjectName(QString::fromUtf8("sources.list"));
     selectWidget = ui->listWidget;
     ui->stackedWidget->setCurrentIndex(0);
-}
 
+
+    connect(sourceinterface,SIGNAL(downloadover(QString)),this,SLOT(downloadOverSlot(QString)));
+}
 sourceManager::~sourceManager()
 {
     delete ui;
+}
+
+void sourceManager::downloadOverSlot(QString speed)
+{
+    qDebug()<<"------speed"<<speed;
+    spend = speed;
 }
 
 //搜查源个数,添加按钮，页面，及listwidget
@@ -144,7 +153,7 @@ void sourceManager::fillInTheDynamicData(QListWidget *ListWidget, int num)
 //刷新按钮回调
 void sourceManager::refreshBtnClicked()
 {
-    spend = sourceinterface->getDownloadSpeedFromSource();
+//    spend = sourceinterface->getDownloadSpeedFromSource();
     qDebug()<<"~~~~~~~~刷新~~~~~~~~~~~~~~~~~:"<<spend;
     fillInTheDynamicData(ui->listWidget, ui->listWidget->count()-1);
     for(int i = 0; i < pageNum; i++)

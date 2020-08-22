@@ -57,7 +57,7 @@ QStringList sourceInterface::getSourceAddressList(QString fileName)
         if((line.left(1).compare("#") !=0) && (line.compare("") !=0)){
             if(line.contains(" "))
             {
-//                QStringList list = line.split(" ");
+                //                QStringList list = line.split(" ");
                 sourceList << line;
             }
         }
@@ -138,7 +138,7 @@ QString sourceInterface::setPingToWidget(QString sourceName)
         if(str.contains("\n")){
             QStringList list2 = str.split("ms");
             ret = list2.at(0) + "ms";
-//            qDebug()<<str.remove("\n")<<"======";
+            //            qDebug()<<str.remove("\n")<<"======";
         }
     }
     else{
@@ -156,17 +156,18 @@ QString sourceInterface::getDownloadSpeedFromSource()
     manager = new QNetworkAccessManager();
     connect(manager,SIGNAL(finished(QNetworkReply*)),this,SLOT(downloadFinish(QNetworkReply*)));
 
-    QNetworkRequest request(QUrl("http://mirrors.aliyun.com/ubuntu/ls-lR.gz"));
+    QNetworkRequest request(QUrl("http://archive.ubuntukylin.com/software/dists/focal/main/binary-amd64/Packages.gz"));
 
     downreply = manager->get(request);
 
 
     connect(downreply, SIGNAL(downloadProgress(qint64,qint64)),
             SLOT(downloadProgress(qint64,qint64)));
-    timer->setInterval(500);
+    timer->setInterval(10);
+    timenum = 0 ;
     timer->start();
     qDebug()<<"download start";
-    sleep(6);
+//    sleep(6);
     qDebug()<<"speedstr : "<<speedstr;
     return speedstr;
 }
@@ -183,13 +184,12 @@ void sourceInterface::stopdownload()
 void sourceInterface::update()
 {
     timenum++;
-    alltime = time.elapsed();
-    if(alltime > 5000){
+    if(alltime > 500){
         qDebug()<<"all size: "<<allsize<<"  all time :"<<alltime;
         timer->stop();
         stopdownload();
 
-        speed = allsize * 1000.0 / alltime;
+        speed = allsize * 100.0 / alltime;
         QString unit;
         if (speed < 1024) {
             unit = "bytes/sec";
@@ -200,25 +200,26 @@ void sourceInterface::update()
             speed /= 1024*1024;
             unit = "MB/s";
         }
-        speedstr = QString(QString::number(speed, 10,3) +unit);
+        speedstr = QString(QString::number(speed, 10,1) +unit);
         qDebug()<<"this is speed :"<<speedstr;
+            emit(downloadover(speedstr));
     }
-    if(alltime == 0 && timenum == 10){
+    if(alltime == 0 && timenum == 100){
         qDebug()<<"not download!";
         timer->stop();
         stopdownload();
         speedstr = "0 kb/s";
+        emit(downloadover(speedstr));
     }
-    qDebug()<<"all time :"<<alltime;
+
 }
 void sourceInterface::downloadFinish(QNetworkReply *reply)
 {
     //    qDebug()<<"file size :"<<reply->readAll().size();
 
     timer->stop();
-    //    qDebug()<<"size :"<<size;
-    double speed = allsize * 1000.0 / alltime;
-    qDebug()<<speed<<"spped";
+    qDebug()<<"all size: "<<allsize<<"  all time :"<<alltime;
+    double speed = allsize * 100.0 / alltime;
 
     QString unit;
     if (speed < 1024) {
@@ -230,6 +231,9 @@ void sourceInterface::downloadFinish(QNetworkReply *reply)
         speed /= 1024*1024;
         unit = "MB/s";
     }
+    speedstr = QString(QString::number(speed, 10,1) +unit);
+    qDebug()<<"====speedstr"<<speedstr;
+    emit(downloadover(speedstr));
 
     qDebug() << "Download Speed: " << speed << " " << unit;
 
@@ -237,11 +241,9 @@ void sourceInterface::downloadFinish(QNetworkReply *reply)
 void sourceInterface::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 {
 
-    if(time.isNull()){
-        time.start();
-    }
 
     allsize = bytesReceived;
+    alltime = timenum;
 
     qDebug()<<"all size :"<<allsize;
 }

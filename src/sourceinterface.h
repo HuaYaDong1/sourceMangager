@@ -33,8 +33,6 @@ public:
 
 
     QTimer *timer;
-    QTime time;
-    QTime qtime;
     QNetworkAccessManager *manager;
     QNetworkReply *downreply ;
 
@@ -51,6 +49,9 @@ public slots:
     void stopdownload();
     void downloadFinish(QNetworkReply *reply);
     void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
+
+signals:
+    void downloadover(QString );
 
 };
 
