@@ -21,6 +21,7 @@ SOURCES += \
     addsource.cpp \
     datetypewidget.cpp \
     delayrefreshthread.cpp \
+    downloadspendrefreshthread.cpp \
     main.cpp \
     sourceinformationwidget.cpp \
     sourcemanager.cpp\
@@ -30,6 +31,7 @@ HEADERS += \
     addsource.h \
     datetypewidget.h \
     delayrefreshthread.h \
+    downloadspendrefreshthread.h \
     sourceinformationwidget.h \
     sourcemanager.h\
     sourceinterface.h

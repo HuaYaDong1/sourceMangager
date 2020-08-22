@@ -11,6 +11,7 @@
 #include <QDBusPendingCall>
 #include "addsource.h"
 #include "ui_addsource.h"
+#include "downloadspendrefreshthread.h"
 
 
 sourceManager::sourceManager(QWidget *parent)
@@ -19,8 +20,6 @@ sourceManager::sourceManager(QWidget *parent)
 {
     ui->setupUi(this);
     sourceinterface = new sourceInterface;
-//    spend =
-    sourceinterface->getDownloadSpeedFromSource();
     deleteFlag = 0;
     connect(ui->listWidget,SIGNAL(itemClicked(QListWidgetItem*)),this,SLOT(selectDeleteIteam(QListWidgetItem*)));
     connect(ui->mainSourseBtn, SIGNAL(clicked()), this, SLOT(SourceBtnClicked()) );
@@ -35,7 +34,6 @@ sourceManager::sourceManager(QWidget *parent)
     selectWidget = ui->listWidget;
     ui->stackedWidget->setCurrentIndex(0);
 
-
     connect(sourceinterface,SIGNAL(downloadover(QString)),this,SLOT(downloadOverSlot(QString)));
 }
 sourceManager::~sourceManager()
@@ -45,8 +43,33 @@ sourceManager::~sourceManager()
 
 void sourceManager::downloadOverSlot(QString speed)
 {
-    qDebug()<<"------speed"<<speed;
-    spend = speed;
+    if(flag != ui->listWidget->count())
+    {
+        sourceInformationWidget* pwig = static_cast<sourceInformationWidget*> (ui->listWidget->itemWidget(ui->listWidget->item(flag)));
+        pwig->ui->spend_Label->setText(speed);
+        sourceinterface->getDownloadSpeedFromSource(pwig->ui->address_Label->text());
+        flag++;
+    }
+    else
+    {
+        if(flag1 != pageNum)
+        {
+            if(flag2 != WidgetList[flag1]->count()-1){
+                sourceInformationWidget* pwig = static_cast<sourceInformationWidget*> (WidgetList[flag1]->itemWidget(WidgetList[flag1]->item(flag2)));
+                pwig->ui->spend_Label->setText(speed);
+                sourceinterface->getDownloadSpeedFromSource(pwig->ui->address_Label->text());
+            }
+            else
+            {
+                flag2 = 1;
+            }
+        }
+        else
+        {
+            flag1 = 0;
+            flag = 1;
+        }
+    }
 }
 
 //搜查源个数,添加按钮，页面，及listwidget
@@ -96,9 +119,13 @@ void sourceManager::showMainSource(QListWidget *listWidget)
     QStringList adddresslist = sourceinterface->getSourceAddressList("/etc/apt/sources.list");
     QStringList typeList= sourceinterface->getSourceTypeList("/etc/apt/sources.list");
 
+    sourceinterface->getDownloadSpeedFromSource(adddresslist.at(0));
+
     initializationList(listWidget,adddresslist.count()+1);//初始化列表框
     fillInTheData(listWidget, adddresslist, typeList); //填充地址，类型，数据
     fillInTheDynamicData(listWidget, adddresslist.count());
+//    downloadSpendRefreshThread *thread = new downloadSpendRefreshThread(listWidget, adddresslist.count());
+//    thread->start();
 }
 
 //次源展示页回调
@@ -148,14 +175,12 @@ void sourceManager::fillInTheDynamicData(QListWidget *ListWidget, int num)
         sourceInformationWidget* pwig = static_cast<sourceInformationWidget*> (ListWidget->itemWidget(item));
         delayRefreshThread *thread = new delayRefreshThread(pwig->ui->spend_Label, pwig->ui->delay_Label, pwig->ui->address_Label->text());
         thread->start();
-        pwig->ui->spend_Label->setText(spend);
     }
 }
 
 //刷新按钮回调
 void sourceManager::refreshBtnClicked()
 {
-//    spend = sourceinterface->getDownloadSpeedFromSource();
     qDebug()<<"~~~~~~~~刷新~~~~~~~~~~~~~~~~~:"<<spend;
     fillInTheDynamicData(ui->listWidget, ui->listWidget->count()-1);
     for(int i = 0; i < pageNum; i++)
@@ -271,7 +296,6 @@ void sourceManager::addBtnClicked()
     serviceInterface->asyncCall("addSource", sourceDelete);
     addForListwidget(selectWidget, sourceinfo);
     ui->addLineEdit->setText("");
-
 }
 
 void sourceManager::addForListwidget(QListWidget *ListWidget, QString address)

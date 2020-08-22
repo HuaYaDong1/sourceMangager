@@ -55,6 +55,10 @@ private:
     int deleteFlag;
     int pageNum;
     QString spend;
+    int flag = 1;
+    int flag1 = 0;
+    int flag2 = 1;
+
 
 signals:
 
