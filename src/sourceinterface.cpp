@@ -180,6 +180,11 @@ void sourceInterface::getDownloadSpeedFromSource(QString sourceName)
     if(httpStr.right(1).compare("/") != 0){
         httpStr.append("/");
     }
+    if(dir.compare("multiverse") == 0 || dir.compare("universe") == 0 || dir.compare("restricted") == 0)
+    {
+        dir.clear();
+        dir = "main";
+    }
 
     QString url = QString("%1dists/%2/%3/binary-%4/Packages.gz").arg(httpStr).arg(versionDir).arg(dir).arg(archStr);
 
