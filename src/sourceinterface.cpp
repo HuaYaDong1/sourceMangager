@@ -187,6 +187,7 @@ void sourceInterface::getDownloadSpeedFromSource(QString sourceName)
     }
 
     QString url = QString("%1dists/%2/%3/binary-%4/Packages.gz").arg(httpStr).arg(versionDir).arg(dir).arg(archStr);
+    qDebug()<<"url :"<<url;
 
 
     timer = new QTimer(this);
@@ -208,7 +209,7 @@ void sourceInterface::getDownloadSpeedFromSource(QString sourceName)
     qDebug()<<"download start";
 //    sleep(6);
     qDebug()<<"speedstr : "<<speedstr;
-    return speedstr;
+    return ;
 }
 void sourceInterface::stopdownload()
 {
