@@ -3,6 +3,8 @@
 sourceInterface::sourceInterface()
 {
 
+
+
 }
 sourceInterface::~sourceInterface()
 {
@@ -148,99 +150,102 @@ QString sourceInterface::setPingToWidget(QString sourceName)
 }
 QString sourceInterface::getDownloadSpeedFromSource()
 {
-    int beforeNum = getPacketsFromNetwork();
-    sleep(1);
-    int afterNum = getPacketsFromNetwork();
+    timer = new QTimer(this);
+    connect(timer,SIGNAL(timeout()),this,SLOT(update()));
 
-    qDebug()<<"-----------------------------------------";
-    int networkSpeed = afterNum - beforeNum;
+    manager = new QNetworkAccessManager();
+    connect(manager,SIGNAL(finished(QNetworkReply*)),this,SLOT(downloadFinish(QNetworkReply*)));
 
-    QString str = QString("%1 kb/s").arg(networkSpeed);
+    QNetworkRequest request(QUrl("http://mirrors.aliyun.com/ubuntu/ls-lR.gz"));
 
-    qDebug()<<str;
-    qDebug()<<"----------ssss-------------------------------";
-    return str;
+    downreply = manager->get(request);
+
+
+    connect(downreply, SIGNAL(downloadProgress(qint64,qint64)),
+            SLOT(downloadProgress(qint64,qint64)));
+    timer->setInterval(500);
+    timer->start();
+    qDebug()<<"download start";
+    sleep(6);
+    qDebug()<<"speedstr : "<<speedstr;
+    return speedstr;
+}
+void sourceInterface::stopdownload()
+{
+    disconnect(downreply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(downloadProgress(qint64,qint64)));
+    disconnect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadFinish(QNetworkReply*)));
+    downreply->abort();
+    downreply->deleteLater();
+    downreply = NULL;
+
 }
 
-int  sourceInterface::getPacketsFromNetwork()
+void sourceInterface::update()
 {
-    int packetnum;
-    QList<QNetworkInterface>list=QNetworkInterface::allInterfaces();//获取所有网络接口信息
+    timenum++;
+    alltime = time.elapsed();
+    if(alltime > 5000){
+        qDebug()<<"all size: "<<allsize<<"  all time :"<<alltime;
+        timer->stop();
+        stopdownload();
 
-    foreach(QNetworkInterface interface,list)
-    {
-        if(interface.name() == "lo"){
-            continue;
+        speed = allsize * 1000.0 / alltime;
+        QString unit;
+        if (speed < 1024) {
+            unit = "bytes/sec";
+        } else if (speed < 1024*1024) {
+            speed /= 1024;
+            unit = "kB/s";
+        } else {
+            speed /= 1024*1024;
+            unit = "MB/s";
         }
-        FILE *fp;
-        char cmd[1024];
-        char pRetMsg[1024];
-        QByteArray tmp = interface.name().toLatin1();
-        char *name = tmp.data();
-        sprintf(cmd,"ifconfig %s | grep 'bytes' | awk '{print $3}'",name);
-
-        if ((fp = popen(cmd, "r") ) == NULL)
-        {
-            printf("Popen Error!\n");
-            return -2;
-        }
-        else
-        {
-            memset(pRetMsg, 0, 1024);
-            //get lastest result
-            fgets(pRetMsg, 1024, fp);
-            fgets(pRetMsg, 1024, fp);
-            packetnum = atoi(pRetMsg);
-            if(packetnum == 0){
-                continue;
-            }
-            if ( (pclose(fp)) == -1)
-            {
-                printf("close popenerror!\n");
-                return -3;
-            }
-
-            qDebug()<<packetnum;
-            return packetnum;
-        }
+        speedstr = QString(QString::number(speed, 10,3) +unit);
+        qDebug()<<"this is speed :"<<speedstr;
     }
-    return packetnum;
-}
-
-
-void sourceInterface::deleteSource(QString sourceName, QString sourceFileName)
-{
-    //root
-    qDebug()<<sourceName<<"    "<<sourceFileName;
-    QFile file(sourceFileName);
-    file.open(QIODevice::ReadWrite | QIODevice::Text);
-    QString s;
-    QTextStream t(&file);
-    QString line;
-    while(!t.atEnd())
-    {
-        line = t.readLine();
-        if(line.compare(sourceName) != 0){
-            s.append(line + "\n");
-        }
+    if(alltime == 0 && timenum == 10){
+        qDebug()<<"not download!";
+        timer->stop();
+        stopdownload();
+        speedstr = "0 kb/s";
     }
-    file.resize(0);
-    t << s;
-    file.close();
+    qDebug()<<"all time :"<<alltime;
 }
-
-
-void sourceInterface::addSource(QString sourceName, QString sourceFileName)
+void sourceInterface::downloadFinish(QNetworkReply *reply)
 {
-    //root
+    //    qDebug()<<"file size :"<<reply->readAll().size();
 
-    QFile file(sourceFileName);
-    file.open(QIODevice::ReadWrite | QIODevice::Append);
+    timer->stop();
+    //    qDebug()<<"size :"<<size;
+    double speed = allsize * 1000.0 / alltime;
+    qDebug()<<speed<<"spped";
 
-    file.write(QString(sourceName + "\n").toLatin1());
-    file.close();
+    QString unit;
+    if (speed < 1024) {
+        unit = "bytes/sec";
+    } else if (speed < 1024*1024) {
+        speed /= 1024;
+        unit = "kB/s";
+    } else {
+        speed /= 1024*1024;
+        unit = "MB/s";
+    }
+
+    qDebug() << "Download Speed: " << speed << " " << unit;
 
 }
+void sourceInterface::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
+{
+
+    if(time.isNull()){
+        time.start();
+    }
+
+    allsize = bytesReceived;
+
+    qDebug()<<"all size :"<<allsize;
+}
+
 
 
 

@@ -13,7 +13,9 @@
 #include <unistd.h>
 #include <QTextCodec>
 #include <QObject>
-
+#include <QTimer>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
 
 class sourceInterface : public QObject
 {
@@ -28,13 +30,27 @@ public:
     QString  setPingToWidget(QString sourceName);
     QStringList getSourceTypeList(QString fileName);
     QString getDownloadSpeedFromSource();
-    int getPacketsFromNetwork();
-    void deleteSource(QString sourceName, QString sourceFileName);
-    void addSource(QString sourceName, QString sourceFileName);
 
 
+    QTimer *timer;
+    QTime time;
+    QTime qtime;
+    QNetworkAccessManager *manager;
+    QNetworkReply *downreply ;
+
+    int allsize = 0;
+    int alltime = 0;
+    int timenum=0;
+    bool timeout = false;
+    double speed;
+    QString speedstr;
 
 
+public slots:
+    void update();
+    void stopdownload();
+    void downloadFinish(QNetworkReply *reply);
+    void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
 
 };
 
