@@ -148,24 +148,58 @@ QString sourceInterface::setPingToWidget(QString sourceName)
     qDebug()<<"ret="<<ret;
     return ret;
 }
-QString sourceInterface::getDownloadSpeedFromSource()
+void sourceInterface::getDownloadSpeedFromSource(QString sourceName)
 {
+
+    QStringList list = sourceName.split(" ");
+    QString versionDir;
+    QString dir;
+    QString httpStr;
+    QString archStr;
+
+
+    //get arch
+    QProcess process;
+    process.start("dpkg --print-architecture");
+    process.waitForFinished(-1);
+    QString str =  process.readLine();
+    archStr=str.remove("\n");
+
+
+    int i = 0;
+    for(i=0;i<list.size();i++){
+        QString str = list.at(i);
+        if(str.contains("http:")){
+            if(i < list.size() -2){
+                httpStr = list.at(i);
+                versionDir = list.at(i+1);
+                dir = list.at(i+2);
+            }
+        }
+    }
+    if(httpStr.right(1).compare("/") != 0){
+        httpStr.append("/");
+    }
+
+    QString url = QString("%1dists/%2/%3/binary-%4/Packages.gz").arg(httpStr).arg(versionDir).arg(dir).arg(archStr);
+
+
     timer = new QTimer(this);
     connect(timer,SIGNAL(timeout()),this,SLOT(update()));
 
     manager = new QNetworkAccessManager();
     connect(manager,SIGNAL(finished(QNetworkReply*)),this,SLOT(downloadFinish(QNetworkReply*)));
 
-    QNetworkRequest request(QUrl("http://archive.ubuntukylin.com/software/dists/focal/main/binary-amd64/Packages.gz"));
+    QNetworkRequest request(url);
 
     downreply = manager->get(request);
 
 
     connect(downreply, SIGNAL(downloadProgress(qint64,qint64)),
             SLOT(downloadProgress(qint64,qint64)));
-    timer->setInterval(10);
+    timer->setInterval(1);
     timenum = 0 ;
-    timer->start();
+
     qDebug()<<"download start";
 //    sleep(6);
     qDebug()<<"speedstr : "<<speedstr;
@@ -184,12 +218,12 @@ void sourceInterface::stopdownload()
 void sourceInterface::update()
 {
     timenum++;
-    if(alltime > 500){
+    if(alltime > 5000){
         qDebug()<<"all size: "<<allsize<<"  all time :"<<alltime;
         timer->stop();
         stopdownload();
 
-        speed = allsize * 100.0 / alltime;
+        speed = allsize * 1000.0 / alltime;
         QString unit;
         if (speed < 1024) {
             unit = "bytes/sec";
@@ -204,7 +238,7 @@ void sourceInterface::update()
         qDebug()<<"this is speed :"<<speedstr;
             emit(downloadover(speedstr));
     }
-    if(alltime == 0 && timenum == 100){
+    if(alltime == 0 && timenum == 1000){
         qDebug()<<"not download!";
         timer->stop();
         stopdownload();
@@ -219,7 +253,7 @@ void sourceInterface::downloadFinish(QNetworkReply *reply)
 
     timer->stop();
     qDebug()<<"all size: "<<allsize<<"  all time :"<<alltime;
-    double speed = allsize * 100.0 / alltime;
+    double speed = allsize * 1000.0 / alltime;
 
     QString unit;
     if (speed < 1024) {
@@ -241,7 +275,7 @@ void sourceInterface::downloadFinish(QNetworkReply *reply)
 void sourceInterface::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 {
 
-
+    timer->start();
     allsize = bytesReceived;
     alltime = timenum;
 

@@ -29,7 +29,7 @@ public:
     QStringList getSourceAddressList(QString fileName);
     QString  setPingToWidget(QString sourceName);
     QStringList getSourceTypeList(QString fileName);
-    QString getDownloadSpeedFromSource();
+    void getDownloadSpeedFromSource(QString sourceName);
 
 
     QTimer *timer;
