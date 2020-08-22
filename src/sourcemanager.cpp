@@ -9,6 +9,8 @@
 #include <QDBusInterface>
 #include <QVariantList>
 #include <QDBusPendingCall>
+#include "addsource.h"
+#include "ui_addsource.h"
 
 
 sourceManager::sourceManager(QWidget *parent)
@@ -202,13 +204,11 @@ void sourceManager::questionMessage()
             qDebug()<<"~~~~~~"<<selectWidget->objectName();
             if(!selectWidget->objectName().compare("sources.list"))
             {
-                //sourceinterface->deleteSource(pwig->ui->address_Label->text(),"/etc/apt/"+selectWidget->objectName());
                 sourceDelete<< QVariant::fromValue("/etc/apt/"+selectWidget->objectName())
                             << QVariant::fromValue(pwig->ui->address_Label->text());
             }
             else
             {
-                //sourceinterface->deleteSource(pwig->ui->address_Label->text(),"/etc/apt/sources.list.d/"+selectWidget->objectName());
                 sourceDelete<< QVariant::fromValue("/etc/apt/sources.list.d/"+selectWidget->objectName())
                             << QVariant::fromValue(pwig->ui->address_Label->text());
             }
@@ -225,8 +225,6 @@ void sourceManager::questionMessage()
 //想源文件内添加
 void sourceManager::addBtnClicked()
 {
-    qDebug()<<"~~~~~~";
-
     QDBusInterface *serviceInterface = new QDBusInterface("com.softSource.manager",
                                                           "/com/softSource/Manager",
                                                           "com.softSource.manager.interface",
@@ -238,25 +236,31 @@ void sourceManager::addBtnClicked()
     }
 
     QVariantList sourceDelete;
-    if(ui->addLineEdit->text().isEmpty())
+
+    addSource *addSourcewidget = new addSource();
+    addSourcewidget->exec();
+
+    if(addSourcewidget->ui->preview_lineEdit->text().isEmpty())
     {
         return ;
     }
+
+    QString sourceinfo = addSourcewidget->ui->preview_lineEdit->text();
+
     if(!selectWidget->objectName().compare("sources.list"))
     {
-        //sourceinterface->addSource(ui->addLineEdit->text(),"/etc/apt/"+selectWidget->objectName());
         sourceDelete<< QVariant::fromValue("/etc/apt/"+selectWidget->objectName())
-                    << QVariant::fromValue(ui->addLineEdit->text());
+                    << QVariant::fromValue(sourceinfo);
     }
     else
     {
-        //sourceinterface->addSource(ui->addLineEdit->text(),"/etc/apt/sources.list.d/"+selectWidget->objectName());
         sourceDelete<< QVariant::fromValue("/etc/apt/sources.list.d/"+selectWidget->objectName())
-                    << QVariant::fromValue(ui->addLineEdit->text());
+                    << QVariant::fromValue(sourceinfo);
     }
 
+    qDebug() <<sourceinfo;
     serviceInterface->asyncCall("addSource", sourceDelete);
-    addForListwidget(selectWidget, ui->addLineEdit->text());
+    addForListwidget(selectWidget, sourceinfo);
     ui->addLineEdit->setText("");
 
 }

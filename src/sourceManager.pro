@@ -18,6 +18,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    addsource.cpp \
     datetypewidget.cpp \
     delayrefreshthread.cpp \
     main.cpp \
@@ -26,6 +27,7 @@ SOURCES += \
     sourceinterface.cpp
 
 HEADERS += \
+    addsource.h \
     datetypewidget.h \
     delayrefreshthread.h \
     sourceinformationwidget.h \
@@ -33,6 +35,7 @@ HEADERS += \
     sourceinterface.h
 
 FORMS += \
+    addsource.ui \
     datetypewidget.ui \
     sourceinformationwidget.ui \
     sourcemanager.ui

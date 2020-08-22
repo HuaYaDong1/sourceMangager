@@ -8,6 +8,7 @@
 
 class sourceInterface;
 class sourceInformationWidget;
+class addSource;
 QT_BEGIN_NAMESPACE
 namespace Ui { class sourceManager; }
 QT_END_NAMESPACE
