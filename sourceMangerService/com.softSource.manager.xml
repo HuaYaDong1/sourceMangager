@@ -7,5 +7,10 @@
     <method name="deleteSource">
       <arg name="sourceInfo" type="av" direction="in"/>
     </method>
+    <method name="setMainSource">
+      <arg name="sourceFileName" type="av" direction="in"/>
+    </method>
+    <method name="updateSource">
+    </method>
   </interface>
 </node>

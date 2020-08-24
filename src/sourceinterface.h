@@ -41,8 +41,9 @@ public:
 
     int allsize = 0;
     int alltime = 1;
-    int timenum=1;
+    QTime downloadTime;
     bool timeout = false;
+    bool isStart = false;
     double speed;
     QString speedstr;
     QListWidget *Listwidget;
@@ -58,6 +59,7 @@ public slots:
 
 signals:
     void downloadover(QString , QListWidget * , int );
+    void downloadspeed(QString , QListWidget * , int);
 
 };
 
