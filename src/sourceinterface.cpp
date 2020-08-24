@@ -1,7 +1,4 @@
 #include "sourceinterface.h"
-#include <stdlib.h>
-#include <sys/wait.h>
-
 
 sourceInterface::sourceInterface()
 {
@@ -179,19 +176,7 @@ QString sourceInterface::setPingToWidget(QString sourceName)
     qDebug()<<"ret="<<ret;
     return ret;
 }
-void sourceInterface::getDownloadSpeedFromSource1(QString sourceName)
-{
-    pid_t pid;
-    if ((pid=fork()) < 0)
-        return ;
-    else if (pid > 0)
-    {
-        getDownloadSpeedFromSource1(sourceName);
-    }
-    else{
-        qDebug()<<"sssssssssssssss";
-    }
-}
+
 
 void sourceInterface::getDownloadSpeedFromSource(QString sourceName, QListWidget *listwidget, int num)
 {
@@ -262,24 +247,56 @@ void sourceInterface::stopdownload()
     downreply->abort();
     downreply->deleteLater();
     downreply = NULL;
-
 }
 
 void sourceInterface::update()
 {
-    emit(downloadspeed(speedstr,Listwidget,Num));
-    if(alltime > 5000){
-        if(alltime == 0){
-            qDebug()<<"not download!";
 
-            speedstr = "0 kb/s";
-            emit(downloadover(speedstr,Listwidget,Num));
-            stopdownload();
+    if(!isConnect && timenum < CONNECT_TIME_OUT){
+        speedstr.clear();
+        speedstr.append("no connect");
+        emit(downloadspeed(speedstr,Listwidget,Num));
+    }
+    if(!isConnect && timenum >= CONNECT_TIME_OUT){
+        speedstr.clear();
+        speedstr.append("connect fail");
+        emit(downloadover(speedstr,Listwidget,Num));
+        stopdownload();
+    }
+    timenum++;
+    if(isConnect){
+
+        emit(downloadspeed(speedstr,Listwidget,Num));
+        if(alltime > (CONNECT_TIME_OUT *1000)){
+            if(alltime == 0){
+                qDebug()<<"not download!";
+
+                speedstr = "0 kb/s";
+                emit(downloadover(speedstr,Listwidget,Num));
+                stopdownload();
+            }
+            else{
+                qDebug()<<"all size: "<<allsize<<"  all time :"<<alltime;
+                timer->stop();
+
+                speed = allsize * 1000.0 / alltime;
+                QString unit;
+                if (speed < 1024) {
+                    unit = "bytes/sec";
+                } else if (speed < 1024*1024) {
+                    speed /= 1024;
+                    unit = "kB/s";
+                } else {
+                    speed /= 1024*1024;
+                    unit = "MB/s";
+                }
+                speedstr = QString(QString::number(speed, 10,1) +unit);
+                qDebug()<<"this is speed :"<<speedstr;
+                emit(downloadover(speedstr,Listwidget,Num));
+                stopdownload();
+            }
         }
-        else{
-            qDebug()<<"all size: "<<allsize<<"  all time :"<<alltime;
-            timer->stop();
-
+        else {
             speed = allsize * 1000.0 / alltime;
             QString unit;
             if (speed < 1024) {
@@ -292,28 +309,11 @@ void sourceInterface::update()
                 unit = "MB/s";
             }
             speedstr = QString(QString::number(speed, 10,1) +unit);
-            qDebug()<<"this is speed :"<<speedstr;
-            emit(downloadover(speedstr,Listwidget,Num));
-            stopdownload();
         }
-    }
-    else {
-        speed = allsize * 1000.0 / alltime;
-        QString unit;
-        if (speed < 1024) {
-            unit = "bytes/sec";
-        } else if (speed < 1024*1024) {
-            speed /= 1024;
-            unit = "kB/s";
-        } else {
-            speed /= 1024*1024;
-            unit = "MB/s";
-        }
-        speedstr = QString(QString::number(speed, 10,1) +unit);
-    }
-    qDebug()<<"this is speed :"<<speedstr;
+        qDebug()<<"this is speed :"<<speedstr;
 
-    qDebug()<<"all size :"<<allsize << "all time :"<<alltime;
+        qDebug()<<"all size :"<<allsize << "all time :"<<alltime;
+    }
 }
 
 void sourceInterface::downloadFinish(QNetworkReply *reply)
@@ -344,7 +344,7 @@ void sourceInterface::downloadFinish(QNetworkReply *reply)
 }
 void sourceInterface::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 {
-
+    isConnect = true;
     if(!isStart){
         downloadTime.start();
         timer->start();

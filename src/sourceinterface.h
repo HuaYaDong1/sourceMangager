@@ -18,6 +18,8 @@
 #include <QNetworkReply>
 #include <QListWidget>
 
+#define CONNECT_TIME_OUT 10
+
 class sourceInterface : public QObject
 {
     Q_OBJECT
@@ -32,7 +34,6 @@ public:
     QString  setPingToWidget(QString sourceName);
     QStringList getSourceTypeList(QString fileName);
     void getDownloadSpeedFromSource(QString sourceName, QListWidget *listwidget, int num);
-    void getDownloadSpeedFromSource1(QString sourceName);
 
 
     QTimer *timer;
@@ -44,6 +45,8 @@ public:
     QTime downloadTime;
     bool timeout = false;
     bool isStart = false;
+    int timenum = 0;
+    bool isConnect = false;
     double speed;
     QString speedstr;
     QListWidget *Listwidget;
