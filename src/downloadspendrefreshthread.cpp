@@ -16,7 +16,7 @@ void downloadSpendRefreshThread::run()
     for(int i = 1; i < Num+1; i++){
         QListWidgetItem *item = ListWidget->item(i);
         sourceInformationWidget* pwig = static_cast<sourceInformationWidget*> (ListWidget->itemWidget(item));
-        sourceinterface->getDownloadSpeedFromSource(pwig->ui->address_Label->text());
+        //sourceinterface->getDownloadSpeedFromSource(pwig->ui->address_Label->text());
         //pwig->ui->spend_Label->setText(spend);
     }
     return;
