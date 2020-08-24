@@ -30,7 +30,7 @@ private slots:
     void refreshBtnClicked();
     void addBtnClicked();
     void addForListwidget(QListWidget *ListWidget, QString address);
-    void downloadOverSlot(QString  speed);
+    void downloadOverSlot(QString  speed, QListWidget *Listwidget, int Num);
 
 private:
     Ui::sourceManager *ui;

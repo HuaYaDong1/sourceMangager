@@ -16,6 +16,7 @@
 #include <QTimer>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <QListWidget>
 
 class sourceInterface : public QObject
 {
@@ -29,7 +30,8 @@ public:
     QStringList getSourceAddressList(QString fileName);
     QString  setPingToWidget(QString sourceName);
     QStringList getSourceTypeList(QString fileName);
-    void getDownloadSpeedFromSource(QString sourceName);
+    void getDownloadSpeedFromSource(QString sourceName, QListWidget *listwidget, int num);
+    void getDownloadSpeedFromSource1(QString sourceName);
 
 
     QTimer *timer;
@@ -37,11 +39,14 @@ public:
     QNetworkReply *downreply ;
 
     int allsize = 0;
-    int alltime = 0;
+    int alltime = 1;
     int timenum=0;
     bool timeout = false;
     double speed;
     QString speedstr;
+    QListWidget *Listwidget;
+    int Num;
+    QString SourceName;
 
 
 public slots:
@@ -51,7 +56,7 @@ public slots:
     void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
 
 signals:
-    void downloadover(QString );
+    void downloadover(QString , QListWidget * , int );
 
 };
 
