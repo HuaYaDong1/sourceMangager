@@ -42,6 +42,7 @@ sourceManager::sourceManager(QWidget *parent)
     ui->sourceControlWidget->hide();
 
     connect(sourceinterface,SIGNAL(downloadover(QString ,QListWidget *, int )),this,SLOT(downloadOverSlot(QString ,QListWidget *, int )));
+    connect(sourceinterface,SIGNAL(downloadspeed(QString ,QListWidget *, int )),this,SLOT(downloadspeed(QString ,QListWidget *, int )));
 }
 sourceManager::~sourceManager()
 {
@@ -71,6 +72,13 @@ void sourceManager::downloadOverSlot(QString speed,QListWidget *Listwidget, int 
     }else{
         return ;
     }
+}
+
+void sourceManager::downloadspeed(QString speed,QListWidget *Listwidget, int Num)
+{
+    qDebug()<<speed<<"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
+    sourceInformationWidget* pwig = static_cast<sourceInformationWidget*> (Listwidget->itemWidget(Listwidget->item(Num)));
+    pwig->ui->spend_Label->setText(speed);
 }
 
 //主源页切换
@@ -255,10 +263,10 @@ void sourceManager::refreshBtnClicked()
     //激活循序下载测速
     for(int i = 1; i < selectWidget->count(); i++)
     {
-        sourceInformationWidget* pwig = static_cast<sourceInformationWidget*> (selectWidget->itemWidget(selectWidget->item(1)));
+        sourceInformationWidget* pwig = static_cast<sourceInformationWidget*> (selectWidget->itemWidget(selectWidget->item(i)));
         if(!pwig->ui->delay_Label->text().compare("N/A") == 0)//跳过无法连接的源
         {
-            sourceinterface->getDownloadSpeedFromSource(pwig->ui->address_Label->text(), selectWidget, 1);
+            sourceinterface->getDownloadSpeedFromSource(pwig->ui->address_Label->text(), selectWidget, i);
             break;
         }else{
             pwig->ui->spend_Label->setText("无法连接");

@@ -268,45 +268,6 @@ void sourceInterface::stopdownload()
 void sourceInterface::update()
 {
     emit(downloadspeed(speedstr,Listwidget,Num));
-}
-
-void sourceInterface::downloadFinish(QNetworkReply *reply)
-{
-    //    qDebug()<<"file size :"<<reply->readAll().size();
-    timer->stop();
-    qDebug()<<"all size: "<<allsize<<"  all time :"<<alltime;
-    if(alltime == 0){
-        alltime = 1;
-    }
-    double speed = allsize * 1000.0 / alltime;
-    QString unit;
-    if (speed < 1024) {
-        unit = "bytes/sec";
-    } else if (speed < 1024*1024) {
-        speed /= 1024;
-        unit = "kB/s";
-    } else {
-        speed /= 1024*1024;
-        unit = "MB/s";
-    }
-    speedstr = QString(QString::number(speed, 10,1) +unit);
-    qDebug()<<SourceName<<" ====speedstr "<<speedstr;
-    emit(downloadover(speedstr,Listwidget,Num));
-
-    qDebug() << "Download Speed: " << speed << " " << unit;
-
-}
-void sourceInterface::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
-{
-    //    timer->start();
-    if(!isStart){
-        downloadTime.start();
-        isStart = true;
-    }
-    allsize = bytesReceived;
-    alltime = downloadTime.elapsed();
-
-
     if(alltime > 5000){
         if(alltime == 0){
             qDebug()<<"not download!";
@@ -353,4 +314,43 @@ void sourceInterface::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
     qDebug()<<"this is speed :"<<speedstr;
 
     qDebug()<<"all size :"<<allsize << "all time :"<<alltime;
+}
+
+void sourceInterface::downloadFinish(QNetworkReply *reply)
+{
+    //    qDebug()<<"file size :"<<reply->readAll().size();
+    timer->stop();
+    qDebug()<<"all size: "<<allsize<<"  all time :"<<alltime;
+    if(alltime == 0){
+        alltime = 1;
+    }
+    double speed = allsize * 1000.0 / alltime;
+    QString unit;
+    if (speed < 1024) {
+        unit = "bytes/sec";
+    } else if (speed < 1024*1024) {
+        speed /= 1024;
+        unit = "kB/s";
+    } else {
+        speed /= 1024*1024;
+        unit = "MB/s";
+    }
+    speedstr = QString(QString::number(speed, 10,1) +unit);
+    qDebug()<<SourceName<<" ====speedstr "<<speedstr;
+    emit(downloadover(speedstr,Listwidget,Num));
+
+    qDebug() << "Download Speed: " << speed << " " << unit;
+
+}
+void sourceInterface::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
+{
+
+    if(!isStart){
+        downloadTime.start();
+        timer->start();
+        isStart = true;
+    }
+    allsize = bytesReceived;
+    alltime = downloadTime.elapsed();
+
 }

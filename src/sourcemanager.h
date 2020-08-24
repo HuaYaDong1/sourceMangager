@@ -31,6 +31,7 @@ private slots:
     void addBtnClicked();
     void addForListwidget(QListWidget *ListWidget, QString address);
     void downloadOverSlot(QString  speed, QListWidget *Listwidget, int Num);
+    void downloadspeed(QString speed,QListWidget *Listwidget, int Num);
     void pageMainSourceBtnClicked();
     void pageUnnecessaryBtnClicked();
 

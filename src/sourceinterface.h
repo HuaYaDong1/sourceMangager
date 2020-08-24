@@ -40,7 +40,7 @@ public:
     QNetworkReply *downreply ;
 
     int allsize = 0;
-    int alltime = 1;
+    int alltime = 0;
     QTime downloadTime;
     bool timeout = false;
     bool isStart = false;
