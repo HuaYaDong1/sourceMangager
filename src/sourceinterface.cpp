@@ -220,7 +220,7 @@ void sourceInterface::getDownloadSpeedFromSource(QString sourceName, QListWidget
     connect(downreply, SIGNAL(downloadProgress(qint64,qint64)),
             SLOT(downloadProgress(qint64,qint64)));
     timer->setInterval(1);
-    timenum = 0 ;
+    timenum = 1 ;
 
     qDebug()<<"speedstr : "<<speedstr;
 
@@ -271,7 +271,6 @@ void sourceInterface::update()
 void sourceInterface::downloadFinish(QNetworkReply *reply)
 {
     //    qDebug()<<"file size :"<<reply->readAll().size();
-
     timer->stop();
     qDebug()<<"all size: "<<allsize<<"  all time :"<<alltime;
     double speed = allsize * 1000.0 / alltime;

@@ -40,7 +40,7 @@ public:
 
     int allsize = 0;
     int alltime = 1;
-    int timenum=0;
+    int timenum=1;
     bool timeout = false;
     double speed;
     QString speedstr;
