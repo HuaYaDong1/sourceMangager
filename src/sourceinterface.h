@@ -27,6 +27,7 @@ public:
 
 
     QStringList getSourceName();
+    QStringList getMainSourceName();
     QStringList getSourceAddressList(QString fileName);
     QString  setPingToWidget(QString sourceName);
     QStringList getSourceTypeList(QString fileName);

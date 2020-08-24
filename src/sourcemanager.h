@@ -22,7 +22,7 @@ public:
     ~sourceManager();
 
 private slots:
-    void showMainSource(QListWidget *listWidget);
+    void showMainSource(QListWidget *listWidget, int num);
     void showUnnecessarySource(QListWidget *listWidget, int num);
     void selectDeleteIteam(QListWidgetItem *item);
     void deleteBtnClicked();
@@ -31,6 +31,8 @@ private slots:
     void addBtnClicked();
     void addForListwidget(QListWidget *ListWidget, QString address);
     void downloadOverSlot(QString  speed, QListWidget *Listwidget, int Num);
+    void pageMainSourceBtnClicked();
+    void pageUnnecessaryBtnClicked();
 
 private:
     Ui::sourceManager *ui;
@@ -41,6 +43,7 @@ private:
     void fillInTheDynamicData(QListWidget *ListWidget, int num);
     void questionMessage();
     void searchSourcesNumber();
+    void searchUnnecessarySourcesNumber();
 
     sourceInformationWidget *widget[1024];
 
@@ -51,13 +54,21 @@ private:
     QListWidgetItem *delete_item;
     QListWidget  *selectWidget;
     sourceInterface  *sourceinterface;
-    QStringList SourceList ;
+    QStringList SourceList;
+    QStringList mainSourceList;
     int deleteFlag;
     int pageNum;
     QString spend;
     int flag = 1;
     int flag1 = 0;
     int flag2 = 1;
+    QString UnnecessarySourceName;
+    QString mainSourceName;
+    int UnnecessarySageCount;
+    int mainSageCount;
+
+    QListWidget * mainWidget;
+    QListWidget * UnnecessaryWidget;
 
 
 signals:

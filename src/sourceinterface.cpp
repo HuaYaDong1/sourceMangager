@@ -13,6 +13,34 @@ sourceInterface::~sourceInterface()
 {
 
 }
+
+QStringList sourceInterface::getMainSourceName()
+{
+    QStringList sourceNameList;
+    QDir sourceDir = QDir("/etc/apt");
+    if(!sourceDir.exists()){
+        qDebug()<<"source dir not exist!";
+        return sourceNameList;
+    }
+    QStringList fileList =  sourceDir.entryList(QDir::Files | QDir::NoDotAndDotDot | QDir::Dirs);
+    int i = 0;
+    for(i=0;i<fileList.size();i++){
+        if((QString("mainsources").compare(fileList.at(i)) == 0)){
+            QDir sourcedDir("/etc/apt/mainsources");
+            QStringList filedList =  sourcedDir.entryList(QDir::Files | QDir::NoDotAndDotDot | QDir::Dirs);
+            int j;
+            for(j=0; j<filedList.size() ;j++){
+                QString str = filedList.at(j);
+                QString liststr = str.right(5);
+                if(liststr.compare(".list") ==0 ){
+                    sourceNameList << filedList.at(j);
+                }
+            }
+        }
+    }
+    return sourceNameList;
+}
+
 QStringList sourceInterface::getSourceName()
 {
     QStringList sourceNameList;
