@@ -28,6 +28,11 @@ sourceManager::sourceManager(QWidget *parent)
     connect(ui->addBtn, SIGNAL(clicked()), this, SLOT(addBtnClicked()));
     connect(ui->pageMainSourceBtn, SIGNAL(clicked()), this, SLOT(pageMainSourceBtnClicked()));
     connect(ui->pageUnnecessaryBtn, SIGNAL(clicked()), this, SLOT(pageUnnecessaryBtnClicked()));
+    connect(ui->updateBtn, SIGNAL(clicked()), this, SLOT(updateBtnClicked()));
+
+
+    QDBusConnection::systemBus().connect("com.softSource.manager","/com/softSource/manager","com.softSource.manager.interface","updateOver",this,SLOT(updateOverSlot()));
+
 
 
     searchSourcesNumber();//搜查主源个数
@@ -44,6 +49,7 @@ sourceManager::sourceManager(QWidget *parent)
     connect(sourceinterface,SIGNAL(downloadover(QString ,QListWidget *, int )),this,SLOT(downloadOverSlot(QString ,QListWidget *, int )));
     connect(sourceinterface,SIGNAL(downloadspeed(QString ,QListWidget *, int )),this,SLOT(downloadspeed(QString ,QListWidget *, int )));
 }
+
 sourceManager::~sourceManager()
 {
     delete ui;
@@ -105,8 +111,7 @@ void sourceManager::pageUnnecessaryBtnClicked()
 void sourceManager::searchSourcesNumber()
 {
     mainSourceList = sourceinterface->getMainSourceName();
-    pageNum = mainSourceList.count();
-    qDebug()<<mainSourceList;
+    pageMainNum = mainSourceList.count();
     mainSourceName = mainSourceList.at(0); //第一次副源页切换，当前页名字
     ui->label->setText(mainSourceList.at(0));
 
@@ -114,7 +119,7 @@ void sourceManager::searchSourcesNumber()
     QListWidget * WidgetList[1024];
     QPushButton *unnecessarySourceBtn[1024];
 
-    for(int i=0; i<pageNum; i++)
+    for(int i=0; i<pageMainNum; i++)
     {
         page[i] = new QWidget();
         unnecessarySourceBtn[i] = new QPushButton();
@@ -136,9 +141,9 @@ void sourceManager::searchSourcesNumber()
             mainSourceName = SourceList.at(i);
             mainSageCount = i;
         } );
-        //connect(WidgetList[i],SIGNAL(itemClicked(QListWidgetItem*)),this,SLOT(selectDeleteIteam(QListWidgetItem*)));
 
         selectWidget = WidgetList[0];
+        mainWidget = WidgetList[0];
         qDebug()<<WidgetList[0]->objectName()<<"cccccccccccccccccccccccccccccccc";
         qDebug()<<mainSourceList.at(i)<<"xxxxxxxxxxxxxxxxxxxxxxxxx";
         showMainSource(WidgetList[i], i);
@@ -177,6 +182,7 @@ void sourceManager::searchUnnecessarySourcesNumber()
         } );
         connect(WidgetList[i],SIGNAL(itemClicked(QListWidgetItem*)),this,SLOT(selectDeleteIteam(QListWidgetItem*)));
 
+        UnnecessaryWidget = WidgetList[0];
         qDebug()<<SourceList.at(i);
         showUnnecessarySource(WidgetList[i], i);
     }
@@ -255,11 +261,7 @@ void sourceManager::fillInTheDynamicData(QListWidget *ListWidget, int num)
 void sourceManager::refreshBtnClicked()
 {
     qDebug()<<"~~~~~~~~刷新~~~~~~~~~~~~~~~~~:"<<selectWidget->objectName();
-    fillInTheDynamicData(ui->listWidget, ui->listWidget->count()-1);
-    for(int i = 0; i < pageNum; i++)
-    {
-        fillInTheDynamicData(WidgetList[i], WidgetList[i]->count()-1);
-    }
+    fillInTheDynamicData(selectWidget, selectWidget->count()-1);
     //激活循序下载测速
     for(int i = 1; i < selectWidget->count(); i++)
     {
@@ -392,4 +394,24 @@ void sourceManager::addForListwidget(QListWidget *ListWidget, QString address)
     QStringList Address = address.split(" ");
     widget->ui->address_Label->setText(address);
     widget->ui->type_Label->setText(Address.at(0));
+}
+
+void sourceManager::updateBtnClicked()
+{
+    QDBusInterface *serviceInterface = new QDBusInterface("com.softSource.manager",
+                                                          "/com/softSource/Manager",
+                                                          "com.softSource.manager.interface",
+                                                          QDBusConnection::systemBus());
+    if(!serviceInterface->isValid())
+    {
+        qDebug() << "Service Interface: " << qPrintable(QDBusConnection::systemBus().lastError().message());
+        return;
+    }
+    serviceInterface->asyncCall("updateSource");
+    ui->updateLabel->setText("正在更新");
+}
+
+void sourceManager::updateOverSlot()
+{
+     ui->updateLabel->setText("更新完成");
 }

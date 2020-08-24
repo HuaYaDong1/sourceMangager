@@ -34,6 +34,8 @@ private slots:
     void downloadspeed(QString speed,QListWidget *Listwidget, int Num);
     void pageMainSourceBtnClicked();
     void pageUnnecessaryBtnClicked();
+    void updateBtnClicked();
+    void updateOverSlot();
 
 private:
     Ui::sourceManager *ui;
@@ -59,6 +61,7 @@ private:
     QStringList mainSourceList;
     int deleteFlag;
     int pageNum;
+    int pageMainNum;
     QString spend;
     int flag = 1;
     int flag1 = 0;
