@@ -161,7 +161,7 @@ void sourceInterface::getDownloadSpeedFromSource1(QString sourceName)
         getDownloadSpeedFromSource1(sourceName);
     }
     else{
-    qDebug()<<"sssssssssssssss";
+        qDebug()<<"sssssssssssssss";
     }
 }
 
@@ -219,8 +219,9 @@ void sourceInterface::getDownloadSpeedFromSource(QString sourceName, QListWidget
     downreply = manager->get(request);
     connect(downreply, SIGNAL(downloadProgress(qint64,qint64)),
             SLOT(downloadProgress(qint64,qint64)));
-    timer->setInterval(1);
-    timenum = 1 ;
+    timer->setInterval(1000);
+
+    isStart = false;
 
     qDebug()<<"speedstr : "<<speedstr;
 
@@ -238,34 +239,7 @@ void sourceInterface::stopdownload()
 
 void sourceInterface::update()
 {
-    timenum++;
-    if(alltime > 5000){
-        qDebug()<<"all size: "<<allsize<<"  all time :"<<alltime;
-        timer->stop();
-        stopdownload();
-
-        speed = allsize * 1000.0 / alltime;
-        QString unit;
-        if (speed < 1024) {
-            unit = "bytes/sec";
-        } else if (speed < 1024*1024) {
-            speed /= 1024;
-            unit = "kB/s";
-        } else {
-            speed /= 1024*1024;
-            unit = "MB/s";
-        }
-        speedstr = QString(QString::number(speed, 10,1) +unit);
-        qDebug()<<"this is speed :"<<speedstr;
-        emit(downloadover(speedstr,Listwidget,Num));
-    }
-    if(alltime == 0 && timenum == 1000){
-        qDebug()<<"not download!";
-        timer->stop();
-        stopdownload();
-        speedstr = "0 kb/s";
-        emit(downloadover(speedstr,Listwidget,Num));
-    }
+    emit(downloadspeed(speedstr,Listwidget,Num));
 }
 
 void sourceInterface::downloadFinish(QNetworkReply *reply)
@@ -273,8 +247,10 @@ void sourceInterface::downloadFinish(QNetworkReply *reply)
     //    qDebug()<<"file size :"<<reply->readAll().size();
     timer->stop();
     qDebug()<<"all size: "<<allsize<<"  all time :"<<alltime;
+    if(alltime == 0){
+        alltime = 1;
+    }
     double speed = allsize * 1000.0 / alltime;
-
     QString unit;
     if (speed < 1024) {
         unit = "bytes/sec";
@@ -294,9 +270,59 @@ void sourceInterface::downloadFinish(QNetworkReply *reply)
 }
 void sourceInterface::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 {
-    timer->start();
+    //    timer->start();
+    if(!isStart){
+        downloadTime.start();
+        isStart = true;
+    }
     allsize = bytesReceived;
-    alltime = timenum;
+    alltime = downloadTime.elapsed();
 
-    qDebug()<<"all size :"<<allsize;
+
+    if(alltime > 5000){
+        if(alltime == 0){
+            qDebug()<<"not download!";
+
+            speedstr = "0 kb/s";
+            emit(downloadover(speedstr,Listwidget,Num));
+            stopdownload();
+        }
+        else{
+            qDebug()<<"all size: "<<allsize<<"  all time :"<<alltime;
+            timer->stop();
+
+            speed = allsize * 1000.0 / alltime;
+            QString unit;
+            if (speed < 1024) {
+                unit = "bytes/sec";
+            } else if (speed < 1024*1024) {
+                speed /= 1024;
+                unit = "kB/s";
+            } else {
+                speed /= 1024*1024;
+                unit = "MB/s";
+            }
+            speedstr = QString(QString::number(speed, 10,1) +unit);
+            qDebug()<<"this is speed :"<<speedstr;
+            emit(downloadover(speedstr,Listwidget,Num));
+            stopdownload();
+        }
+    }
+    else {
+        speed = allsize * 1000.0 / alltime;
+        QString unit;
+        if (speed < 1024) {
+            unit = "bytes/sec";
+        } else if (speed < 1024*1024) {
+            speed /= 1024;
+            unit = "kB/s";
+        } else {
+            speed /= 1024*1024;
+            unit = "MB/s";
+        }
+        speedstr = QString(QString::number(speed, 10,1) +unit);
+    }
+    qDebug()<<"this is speed :"<<speedstr;
+
+    qDebug()<<"all size :"<<allsize << "all time :"<<alltime;
 }
