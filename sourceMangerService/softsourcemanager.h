@@ -4,6 +4,7 @@
 #include <QDBusConnection>
 #include <QFile>
 #include <QTextStream>
+#include <QProcess>
 
 class softSourceManager :public QObject
 {
@@ -16,6 +17,8 @@ public:
 public slots:
     void addSource(QVariantList sourceInfo);
     void deleteSource(QVariantList sourceInfo);
+    void setMainSource(QVariantList sourceFileName);
+    void updateSource();
 
 
 };

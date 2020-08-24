@@ -39,6 +39,10 @@ class InterfaceAdaptor: public QDBusAbstractAdaptor
 "    <method name=\"deleteSource\">\n"
 "      <arg direction=\"in\" type=\"av\" name=\"sourceInfo\"/>\n"
 "    </method>\n"
+"    <method name=\"setMainSource\">\n"
+"      <arg direction=\"in\" type=\"av\" name=\"sourceFileName\"/>\n"
+"    </method>\n"
+"    <method name=\"updateSource\"/>\n"
 "  </interface>\n"
         "")
 public:
@@ -49,6 +53,8 @@ public: // PROPERTIES
 public Q_SLOTS: // METHODS
     void addSource(const QVariantList &sourceInfo);
     void deleteSource(const QVariantList &sourceInfo);
+    void setMainSource(const QVariantList &sourceFileName);
+    void updateSource();
 Q_SIGNALS: // SIGNALS
 };
 

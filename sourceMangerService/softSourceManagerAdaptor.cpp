@@ -45,3 +45,15 @@ void InterfaceAdaptor::deleteSource(const QVariantList &sourceInfo)
     QMetaObject::invokeMethod(parent(), "deleteSource", Q_ARG(QVariantList, sourceInfo));
 }
 
+void InterfaceAdaptor::setMainSource(const QVariantList &sourceFileName)
+{
+    // handle method call com.softSource.manager.interface.setMainSource
+    QMetaObject::invokeMethod(parent(), "setMainSource", Q_ARG(QVariantList, sourceFileName));
+}
+
+void InterfaceAdaptor::updateSource()
+{
+    // handle method call com.softSource.manager.interface.updateSource
+    QMetaObject::invokeMethod(parent(), "updateSource");
+}
+

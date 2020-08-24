@@ -9,7 +9,6 @@ void softSourceManager::addSource(QVariantList sourceInfo)
     QString sourceFileName = sourceInfo.at(0).toString();
     QString sourceName = sourceInfo.at(1).toString();
 
-
     QFile file(sourceFileName);
     file.open(QIODevice::ReadWrite | QIODevice::Append);
 
@@ -37,4 +36,18 @@ void softSourceManager::deleteSource(QVariantList sourceInfo)
     file.resize(0);
     t << s;
     file.close();
+}
+
+void softSourceManager::updateSource()
+{
+    QProcess process;
+    process.start("apt-get update");
+    process.waitForFinished(-1);
+}
+void softSourceManager::setMainSource(QVariantList sourceFileName)
+{
+    QString cmd = QString("cp %1 /etc/apt/sources.list").arg(sourceFileName.at(0).toString());
+    QProcess process;
+    process.start(cmd);
+    process.waitForFinished(-1);
 }
