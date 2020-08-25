@@ -21,6 +21,7 @@ sourceManager::sourceManager(QWidget *parent)
     ui->setupUi(this);
     sourceinterface = new sourceInterface;
     deleteFlag = 0;
+    changeFlag = 0;
     connect(ui->deleteBtn, SIGNAL(clicked()), this, SLOT(deleteBtnClicked()) );
     connect(ui->refreshBtn, SIGNAL(clicked()), this, SLOT(refreshBtnClicked()) );
     connect(ui->addBtn, SIGNAL(clicked()), this, SLOT(addBtnClicked()));
@@ -306,6 +307,7 @@ void sourceManager::selectDeleteIteam(QListWidgetItem *item)
     }
     delete_item = item;
     deleteFlag = 1;
+    changeFlag = 1;
     ui->label_2->setText(pwig->ui->address_Label->text());
     qDebug() << "address : " << pwig->ui->address_Label->text() ;
 }
@@ -313,6 +315,10 @@ void sourceManager::selectDeleteIteam(QListWidgetItem *item)
 //change按钮点击回调
 void sourceManager::changeBtnClicked()
 {
+    if(!changeFlag)
+    {
+        return;
+    }
     sourceInformationWidget* pwig =static_cast<sourceInformationWidget*> (selectWidget->itemWidget(delete_item));
     QDBusInterface *serviceInterface = new QDBusInterface("com.softSource.manager",
                                                           "/com/softSource/Manager",
@@ -328,7 +334,7 @@ void sourceManager::changeBtnClicked()
     addSource *addSourcewidget = new addSource();
 
     QStringList Address = pwig->ui->address_Label->text().split(" ");
-
+    sourceChange << QVariant::fromValue(Address);//原数据
     addSourcewidget->ui->addBtn->setText("更改");
     addSourcewidget->ui->add_lineEdit->setText(Address.at(1));//网址
     addSourcewidget->ui->version_lineEdit->setText(Address.at(2));//版本
@@ -357,8 +363,13 @@ void sourceManager::changeBtnClicked()
     }
 
     addSourcewidget->exec();
+    sourceChange << QVariant::fromValue(addSourcewidget->ui->preview_lineEdit->text());//新数据
+    sourceChange << QVariant::fromValue("/etc/apt/sources.list.d/"+selectWidget->objectName());//文件
+    serviceInterface->asyncCall("changedSource", sourceChange);
+    delete delete_item;
 
-
+    addForListwidget(selectWidget, addSourcewidget->ui->preview_lineEdit->text());
+    changeFlag = 0;
 }
 
 //删除按钮点击回调
@@ -453,6 +464,7 @@ void sourceManager::addBtnClicked()
     addForListwidget(selectWidget, sourceinfo);
 }
 
+//添加新列后刷新
 void sourceManager::addForListwidget(QListWidget *ListWidget, QString address)
 {
     QListWidgetItem *aItem =new QListWidgetItem;

@@ -63,6 +63,7 @@ private:
     QStringList SourceList;
     QStringList mainSourceList;
     int deleteFlag;
+    int changeFlag;
     int pageNum;
     int pageMainNum;
     QString spend;

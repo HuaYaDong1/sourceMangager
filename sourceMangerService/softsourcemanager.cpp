@@ -79,7 +79,7 @@ void softSourceManager::changedSource(QVariantList sourceInfo)
     QString strAll;
     QStringList strList;
     QFile readFile(sourceFileName);		//PATH是自定义读取文件的地址
-    if(readFile.open((QIODevice::ReadOnly|QIODevice::Text)))
+    if(readFile.open(QIODevice::ReadOnly))
     {
         //把文件所有信息读出来
         QTextStream stream(&readFile);
@@ -89,19 +89,21 @@ void softSourceManager::changedSource(QVariantList sourceInfo)
 
     QFile writeFile(sourceFileName);
 
-    if(!writeFile.open(QIODevice::WriteOnly|QIODevice::Text)){
+    if(!writeFile.open(QIODevice::WriteOnly | QIODevice::Truncate)){
         qDebug()<<"open failed!";
         return ;
     }
 
     QTextStream stream(&writeFile);
     strList = strAll.split("\n");
+    qDebug()<<"strList :"<<strList;
     for(int i=0;i<strList.count();i++){
-        if(strList.at(i).contains(srcSourceName))    //"123456789"是要修改的内容
+        if((strList.at(i).compare(srcSourceName)) == 0)    //"123456789"是要修改的内容
         {
             QString tempStr=strList.at(i);
             tempStr.replace(0,tempStr.length(),destSourceName);   //"Hello!"是要替换的内容
             stream<<tempStr<<'\n';
+
         }
         //如果没有找到要替换的内容，照常写入
         else
