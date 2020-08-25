@@ -33,10 +33,22 @@ InterfaceAdaptor::~InterfaceAdaptor()
     // destructor
 }
 
+void InterfaceAdaptor::addExtensionSource(const QVariantList &sourceInfo)
+{
+    // handle method call com.softSource.manager.interface.addExtensionSource
+    QMetaObject::invokeMethod(parent(), "addExtensionSource", Q_ARG(QVariantList, sourceInfo));
+}
+
 void InterfaceAdaptor::addSource(const QVariantList &sourceInfo)
 {
     // handle method call com.softSource.manager.interface.addSource
     QMetaObject::invokeMethod(parent(), "addSource", Q_ARG(QVariantList, sourceInfo));
+}
+
+void InterfaceAdaptor::changedSource(const QVariantList &sourceInfo)
+{
+    // handle method call com.softSource.manager.interface.changedSource
+    QMetaObject::invokeMethod(parent(), "changedSource", Q_ARG(QVariantList, sourceInfo));
 }
 
 void InterfaceAdaptor::deleteSource(const QVariantList &sourceInfo)

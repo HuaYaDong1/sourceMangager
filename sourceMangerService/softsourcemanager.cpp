@@ -67,3 +67,76 @@ void softSourceManager::setMainSource(QVariantList sourceFileName)
     bool sendResult = QDBusConnection::systemBus().send(msg);
     qDebug()<<sendResult;
 }
+
+//arg 1 src  arg 2  dest arg 3 filename
+void softSourceManager::changedSource(QVariantList sourceInfo)
+{
+    QString srcSourceName = sourceInfo.at(0).toString();
+    QString destSourceName = sourceInfo.at(1).toString();
+    QString sourceFileName = sourceInfo.at(2).toString();
+
+
+    QString strAll;
+    QStringList strList;
+    QFile readFile(sourceFileName);		//PATH是自定义读取文件的地址
+    if(readFile.open((QIODevice::ReadOnly|QIODevice::Text)))
+    {
+        //把文件所有信息读出来
+        QTextStream stream(&readFile);
+        strAll=stream.readAll();
+    }
+    readFile.close();
+
+    QFile writeFile(sourceFileName);
+
+    if(!writeFile.open(QIODevice::WriteOnly|QIODevice::Text)){
+        qDebug()<<"open failed!";
+        return ;
+    }
+
+    QTextStream stream(&writeFile);
+    strList = strAll.split("\n");
+    for(int i=0;i<strList.count();i++){
+        if(strList.at(i).contains(srcSourceName))    //"123456789"是要修改的内容
+        {
+            QString tempStr=strList.at(i);
+            tempStr.replace(0,tempStr.length(),destSourceName);   //"Hello!"是要替换的内容
+            stream<<tempStr<<'\n';
+        }
+        //如果没有找到要替换的内容，照常写入
+        else
+        {
+            if(i==strList.count()-1)
+            {
+                stream<<strList.at(i);
+            }
+            else
+            {
+                stream<<strList.at(i)<<'\n';
+            }
+        }
+    }
+    writeFile.close();
+}
+
+
+//arg1 srclist arg2 filename
+void softSourceManager::addExtensionSource(QVariantList sourceInfo)
+{
+    QStringList sourceNameList = sourceInfo.at(0).toStringList();
+    QString sourceFileName = sourceInfo.at(1).toString();
+
+    QFile writeFile(sourceFileName);
+
+    if(!writeFile.open(QIODevice::WriteOnly | QIODevice::Text)){
+        qDebug()<<"open file failed!";
+        return ;
+    }
+    QTextStream stream(&writeFile);
+    for(int i = 0;i<sourceNameList.count();i++){
+        QString tempStr=sourceNameList.at(i);
+        stream<<tempStr<<'\n';
+    }
+    writeFile.close();
+}
+
