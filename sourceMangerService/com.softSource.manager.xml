@@ -12,5 +12,11 @@
     </method>
     <method name="updateSource">
     </method>
+    <method name="changedSource">
+      <arg name="sourceInfo" type="av" direction="in"/>
+    </method>
+    <method name="addExtensionSource">
+      <arg name="sourceInfo" type="av" direction="in"/>
+    </method>
   </interface>
 </node>
