@@ -75,6 +75,7 @@ void softSourceManager::changedSource(QVariantList sourceInfo)
     QString destSourceName = sourceInfo.at(1).toString();
     QString sourceFileName = sourceInfo.at(2).toString();
 
+    qDebug()<<"wwwwwwwwww"<<sourceInfo;
 
     QString strAll;
     QStringList strList;

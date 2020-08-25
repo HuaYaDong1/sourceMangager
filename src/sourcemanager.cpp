@@ -334,7 +334,7 @@ void sourceManager::changeBtnClicked()
     addSource *addSourcewidget = new addSource();
 
     QStringList Address = pwig->ui->address_Label->text().split(" ");
-    sourceChange << QVariant::fromValue(Address);//原数据
+    sourceChange << QVariant::fromValue(pwig->ui->address_Label->text());//原数据
     addSourcewidget->ui->addBtn->setText("更改");
     addSourcewidget->ui->add_lineEdit->setText(Address.at(1));//网址
     addSourcewidget->ui->version_lineEdit->setText(Address.at(2));//版本
@@ -363,8 +363,16 @@ void sourceManager::changeBtnClicked()
     }
 
     addSourcewidget->exec();
+    if(!addSourcewidget->isAddBtnClicked)
+    {
+        return;
+    }
+
+
+
     sourceChange << QVariant::fromValue(addSourcewidget->ui->preview_lineEdit->text());//新数据
     sourceChange << QVariant::fromValue("/etc/apt/sources.list.d/"+selectWidget->objectName());//文件
+    qDebug()<<"xxxxxxxxxxx"<<sourceChange;
     serviceInterface->asyncCall("changedSource", sourceChange);
     delete delete_item;
 
