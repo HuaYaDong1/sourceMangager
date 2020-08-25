@@ -1,4 +1,5 @@
 #include "softsourcemanager.h"
+#include <QDebug>
 
 softSourceManager::softSourceManager()
 {
@@ -40,14 +41,29 @@ void softSourceManager::deleteSource(QVariantList sourceInfo)
 
 void softSourceManager::updateSource()
 {
+    qDebug()<<"开始更新";
     QProcess process;
     process.start("apt-get update");
     process.waitForFinished(-1);
+    qDebug()<<"更新完成";
+
+    QDBusMessage msg = QDBusMessage::createSignal("/citos/client/path", "com.client.test","updateOver");
+    msg<<"更新成功";
+    bool sendResult = QDBusConnection::systemBus().send(msg);
+    qDebug()<<sendResult;
 }
 void softSourceManager::setMainSource(QVariantList sourceFileName)
 {
+    qDebug()<<"设置开始";
     QString cmd = QString("cp %1 /etc/apt/sources.list").arg(sourceFileName.at(0).toString());
     QProcess process;
     process.start(cmd);
     process.waitForFinished(-1);
+
+    qDebug()<<"设置完成";
+
+    QDBusMessage msg = QDBusMessage::createSignal("/citos/client/path", "com.client.test","updateOver");
+    msg<<"主源设置完成";
+    bool sendResult = QDBusConnection::systemBus().send(msg);
+    qDebug()<<sendResult;
 }

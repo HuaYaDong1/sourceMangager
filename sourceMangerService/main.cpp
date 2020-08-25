@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
     new InterfaceAdaptor(sourceManager);
 
     //注册名为/test/objects的对象，把类Object所有槽函数导出为object的method
-    connection.registerObject("/com/softSource/Manager", sourceManager);
+    connection.registerObject("/com/softSource/Manager", sourceManager, QDBusConnection :: ExportAllSlots |QDBusConnection :: ExportAllSignals);
 
     return a.exec();
 }

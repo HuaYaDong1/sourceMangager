@@ -33,6 +33,8 @@ class InterfaceAdaptor: public QDBusAbstractAdaptor
     Q_CLASSINFO("D-Bus Interface", "com.softSource.manager.interface")
     Q_CLASSINFO("D-Bus Introspection", ""
 "  <interface name=\"com.softSource.manager.interface\">\n"
+"    <signal name=\"updateOver\">\n"
+"    </signal>\n"
 "    <method name=\"addSource\">\n"
 "      <arg direction=\"in\" type=\"av\" name=\"sourceInfo\"/>\n"
 "    </method>\n"
@@ -56,6 +58,7 @@ public Q_SLOTS: // METHODS
     void setMainSource(const QVariantList &sourceFileName);
     void updateSource();
 Q_SIGNALS: // SIGNALS
+    void updateOver();
 };
 
 #endif

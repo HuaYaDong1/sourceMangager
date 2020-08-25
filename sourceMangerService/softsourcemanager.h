@@ -5,6 +5,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QProcess>
+#include <QDBusMessage>
 
 class softSourceManager :public QObject
 {
@@ -20,7 +21,8 @@ public slots:
     void setMainSource(QVariantList sourceFileName);
     void updateSource();
 
-
+signals:
+    void updateOver(QString arg);
 };
 
 #endif // SOFTSOURCEMANAGER_H

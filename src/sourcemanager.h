@@ -16,6 +16,7 @@ QT_END_NAMESPACE
 class sourceManager : public QWidget
 {
     Q_OBJECT
+        Q_CLASSINFO("D-Bus Interface", "com.client.test")
 
 public:
     sourceManager(QWidget *parent = nullptr);
@@ -35,7 +36,8 @@ private slots:
     void pageMainSourceBtnClicked();
     void pageUnnecessaryBtnClicked();
     void updateBtnClicked();
-    void updateOverSlot();
+    void updateOverSlot(QString );
+    void setSourceBtnClicked();
 
 private:
     Ui::sourceManager *ui;

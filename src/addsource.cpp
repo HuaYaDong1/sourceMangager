@@ -9,7 +9,7 @@ addSource::addSource(QWidget *parent) :
     ui->setupUi(this);
     ui->add_lineEdit->setPlaceholderText("输入网址");
     ui->version_lineEdit->setPlaceholderText("自定义版本");
-    ui->suffix_lineEdit->setPlaceholderText("自定义后缀");
+    ui->suffix_lineEdit->setPlaceholderText("自定义分支");
     ui->preview_lineEdit->setPlaceholderText("预览");
     ui->preview_lineEdit->setFocusPolicy(Qt::NoFocus);
     ui->preview_lineEdit->setEnabled(false);
@@ -17,6 +17,7 @@ addSource::addSource(QWidget *parent) :
     ui->main->setChecked(true);
     typeStr = "deb";
     branchStr = "main";
+    isAddBtnClicked = false;
     connect(ui->add_lineEdit, SIGNAL(textChanged(const QString &)), this,SLOT(on_add_lineEdit_textChanged(const QString &)));
     connect(ui->version_lineEdit, SIGNAL(textChanged(const QString &)), this,SLOT(on_version_lineEdit_textChanged(const QString &)));
     connect(ui->suffix_lineEdit, SIGNAL(textChanged(const QString &)), this,SLOT(on_suffix_lineEdit_textChanged(const QString &)));
@@ -32,6 +33,7 @@ addSource::addSource(QWidget *parent) :
 
     connect(ui->comboBox, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(versionBoxSel(const QString &)));
     connect(ui->addBtn, SIGNAL(clicked()), this, SLOT(addBtnClicked()) );
+    connect(ui->cancelBtn, SIGNAL(clicked()), this, SLOT(cancelBtnClicked()) );
 }
 
 addSource::~addSource()
@@ -120,6 +122,12 @@ QString addSource::setSource()
 }
 
 void addSource::addBtnClicked()
+{
+    isAddBtnClicked = true;
+    this->close();
+}
+
+void addSource::cancelBtnClicked()
 {
     this->close();
 }

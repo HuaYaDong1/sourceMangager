@@ -29,11 +29,26 @@ sourceManager::sourceManager(QWidget *parent)
     connect(ui->pageMainSourceBtn, SIGNAL(clicked()), this, SLOT(pageMainSourceBtnClicked()));
     connect(ui->pageUnnecessaryBtn, SIGNAL(clicked()), this, SLOT(pageUnnecessaryBtnClicked()));
     connect(ui->updateBtn, SIGNAL(clicked()), this, SLOT(updateBtnClicked()));
+    connect(ui->setSourceBtn, SIGNAL(clicked()), this, SLOT(setSourceBtnClicked()));
 
 
-    QDBusConnection::systemBus().connect("com.softSource.manager","/com/softSource/manager","com.softSource.manager.interface","updateOver",this,SLOT(updateOverSlot()));
+    //    bool connect2 = QDBusConnection::systemBus().connect(QString("com.softSource.manager"),
+    //                                                         QString("/com/softSource/manager"),
+    //                                                         "com.softSource.manager.interface",
+    //                                                         "updateOver",this,SLOT(updateOverSlot(QString )));
 
-
+    QDBusConnection::systemBus().registerObject("/citos/client/path",
+                                                this,
+                                                QDBusConnection :: ExportAllSlots |
+                                                QDBusConnection :: ExportAllSignals
+                                                );
+    QDBusConnection::systemBus().connect(QString(),
+                                         QString("/citos/client/path"),
+                                         "com.client.test",
+                                         "updateOver",
+                                         this,
+                                         SLOT(updateOverSlot(QString))
+                                         );
 
     searchSourcesNumber();//搜查主源个数
     searchUnnecessarySourcesNumber();//搜查次源个数
@@ -90,11 +105,14 @@ void sourceManager::downloadspeed(QString speed,QListWidget *Listwidget, int Num
 //主源页切换
 void sourceManager::pageMainSourceBtnClicked()
 {
+    qDebug()<<mainWidget->objectName();
     ui->stackedWidget_2->setCurrentIndex(0);
-    ui->stackedWidget->setCurrentIndex(1);
+    ui->stackedWidget->setCurrentIndex(mainSageCount+1);
     ui->sourceControlWidget->hide();
     selectWidget = mainWidget;
-    ui->label->setText(mainSourceName);
+    ui->label->setText(mainWidget->objectName());
+    ui->updateLabel->setText("");
+    ui->setSourceBtn->show();
 }
 
 //次源页切换
@@ -105,6 +123,8 @@ void sourceManager::pageUnnecessaryBtnClicked()
     ui->sourceControlWidget->show();
     selectWidget = UnnecessaryWidget;
     ui->label->setText(UnnecessarySourceName);
+    ui->updateLabel->setText("");
+    ui->setSourceBtn->hide();
 }
 
 //搜查主源个数,添加按钮，页面，及listwidget
@@ -140,12 +160,13 @@ void sourceManager::searchSourcesNumber()
             mainWidget = WidgetList[i];
             mainSourceName = SourceList.at(i);
             mainSageCount = i;
+            ui->updateLabel->setText("");
         } );
 
         selectWidget = WidgetList[0];
         mainWidget = WidgetList[0];
-        qDebug()<<WidgetList[0]->objectName()<<"cccccccccccccccccccccccccccccccc";
-        qDebug()<<mainSourceList.at(i)<<"xxxxxxxxxxxxxxxxxxxxxxxxx";
+        qDebug()<<WidgetList[0]->objectName();
+        qDebug()<<mainSourceList.at(i);
         showMainSource(WidgetList[i], i);
     }
 }
@@ -179,6 +200,7 @@ void sourceManager::searchUnnecessarySourcesNumber()
             UnnecessaryWidget = WidgetList[i];
             UnnecessarySourceName = SourceList.at(i);
             UnnecessarySageCount = i;
+             ui->updateLabel->setText("");
         } );
         connect(WidgetList[i],SIGNAL(itemClicked(QListWidgetItem*)),this,SLOT(selectDeleteIteam(QListWidgetItem*)));
 
@@ -242,7 +264,16 @@ void sourceManager::fillInTheData(QListWidget *ListWidget,
         QListWidgetItem *item = ListWidget->item(i);
         sourceInformationWidget* pwig = static_cast<sourceInformationWidget*> (ListWidget->itemWidget(item));
         pwig->ui->address_Label->setText(addressList.at(i-1));
-        pwig->ui->type_Label->setText(typeList.at(i-1));
+        pwig->ui->spend_Label->setText("等待检测");
+        QString type = typeList.at(i-1);
+        if(type.compare("deb") == 0)
+        {
+            pwig->ui->type_Label->setText("软件源");
+        }
+        else
+        {
+            pwig->ui->type_Label->setText("源码源");
+        }
     }
 }
 
@@ -347,7 +378,7 @@ void sourceManager::questionMessage()
 void sourceManager::addBtnClicked()
 {
     QDBusInterface *serviceInterface = new QDBusInterface("com.softSource.manager",
-                                                          "/com/softSource/Manager",
+                                                          "/com/softSource/Manager/xxx",
                                                           "com.softSource.manager.interface",
                                                           QDBusConnection::systemBus());
     if(!serviceInterface->isValid())
@@ -364,6 +395,10 @@ void sourceManager::addBtnClicked()
     if(addSourcewidget->ui->preview_lineEdit->text().isEmpty())
     {
         return ;
+    }
+    if(!addSourcewidget->isAddBtnClicked)
+    {
+        return;
     }
 
     QString sourceinfo = addSourcewidget->ui->preview_lineEdit->text();
@@ -411,7 +446,26 @@ void sourceManager::updateBtnClicked()
     ui->updateLabel->setText("正在更新");
 }
 
-void sourceManager::updateOverSlot()
+void sourceManager::updateOverSlot(QString str)
 {
-     ui->updateLabel->setText("更新完成");
+    qDebug() << "更新结束"<<str;
+    ui->updateLabel->setText(str);
+
+}
+
+void sourceManager::setSourceBtnClicked()
+{
+    QVariantList sourceFileName;
+
+    QDBusInterface *serviceInterface = new QDBusInterface("com.softSource.manager",
+                                                          "/com/softSource/Manager",
+                                                          "com.softSource.manager.interface",
+                                                          QDBusConnection::systemBus());
+    if(!serviceInterface->isValid())
+    {
+        qDebug() << "Service Interface: " << qPrintable(QDBusConnection::systemBus().lastError().message());
+        return;
+    }
+    sourceFileName<< QVariant::fromValue("/etc/apt/mainsources/"+selectWidget->objectName());
+    serviceInterface->asyncCall("setMainSource", sourceFileName);
 }

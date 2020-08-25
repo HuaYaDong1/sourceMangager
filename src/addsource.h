@@ -16,6 +16,8 @@ public:
     explicit addSource(QWidget *parent = nullptr);
     ~addSource();
     Ui::addSource *ui;
+    bool isAddBtnClicked;
+
 
 private slots:
     void on_add_lineEdit_textChanged(const QString &arg1);
@@ -27,6 +29,7 @@ private slots:
     void branchStrupdate(int state);
     void versionBoxSel(const QString &text);
     void addBtnClicked();
+    void cancelBtnClicked();
 
 
 private:
