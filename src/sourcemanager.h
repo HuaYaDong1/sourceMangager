@@ -26,6 +26,7 @@ private slots:
     void showMainSource(QListWidget *listWidget, int num);
     void showUnnecessarySource(QListWidget *listWidget, int num);
     void selectDeleteIteam(QListWidgetItem *item);
+    void changeBtnClicked();
     void deleteBtnClicked();
     void SourceBtnClicked();
     void refreshBtnClicked();

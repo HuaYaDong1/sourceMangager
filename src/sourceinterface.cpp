@@ -344,6 +344,7 @@ void sourceInterface::downloadFinish(QNetworkReply *reply)
 }
 void sourceInterface::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 {
+    qDebug()<<bytesTotal;
     isConnect = true;
     if(!isStart){
         downloadTime.start();

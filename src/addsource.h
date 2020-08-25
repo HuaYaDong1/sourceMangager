@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QDialog>
+#include <QMessageBox>
 
 namespace Ui {
 class addSource;

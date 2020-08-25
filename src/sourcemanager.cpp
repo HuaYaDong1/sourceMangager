@@ -21,8 +21,6 @@ sourceManager::sourceManager(QWidget *parent)
     ui->setupUi(this);
     sourceinterface = new sourceInterface;
     deleteFlag = 0;
-    //connect(ui->listWidget,SIGNAL(itemClicked(QListWidgetItem*)),this,SLOT(selectDeleteIteam(QListWidgetItem*)));
-    //connect(ui->mainSourseBtn, SIGNAL(clicked()), this, SLOT(SourceBtnClicked()) );
     connect(ui->deleteBtn, SIGNAL(clicked()), this, SLOT(deleteBtnClicked()) );
     connect(ui->refreshBtn, SIGNAL(clicked()), this, SLOT(refreshBtnClicked()) );
     connect(ui->addBtn, SIGNAL(clicked()), this, SLOT(addBtnClicked()));
@@ -30,13 +28,7 @@ sourceManager::sourceManager(QWidget *parent)
     connect(ui->pageUnnecessaryBtn, SIGNAL(clicked()), this, SLOT(pageUnnecessaryBtnClicked()));
     connect(ui->updateBtn, SIGNAL(clicked()), this, SLOT(updateBtnClicked()));
     connect(ui->setSourceBtn, SIGNAL(clicked()), this, SLOT(setSourceBtnClicked()));
-
-
-    //    bool connect2 = QDBusConnection::systemBus().connect(QString("com.softSource.manager"),
-    //                                                         QString("/com/softSource/manager"),
-    //                                                         "com.softSource.manager.interface",
-    //                                                         "updateOver",this,SLOT(updateOverSlot(QString )));
-
+    connect(ui->changeBtn, SIGNAL(clicked()), this, SLOT(changeBtnClicked()));
     QDBusConnection::systemBus().registerObject("/citos/client/path",
                                                 this,
                                                 QDBusConnection :: ExportAllSlots |
@@ -52,10 +44,6 @@ sourceManager::sourceManager(QWidget *parent)
 
     searchSourcesNumber();//搜查主源个数
     searchUnnecessarySourcesNumber();//搜查次源个数
-    //showMainSource(ui->listWidget);//主源展示页回调 主源与非固定的次源分开展示refreshBtn
-    //ui->label->setText("sources.list");
-    //ui->listWidget->setObjectName(QString::fromUtf8("sources.list"));
-    //selectWidget = ui->listWidget;
     ui->stackedWidget_2->setCurrentIndex(0);
     ui->stackedWidget->setCurrentIndex(1);
     ui->stackedWidget_3->setCurrentIndex(1);
@@ -200,7 +188,7 @@ void sourceManager::searchUnnecessarySourcesNumber()
             UnnecessaryWidget = WidgetList[i];
             UnnecessarySourceName = SourceList.at(i);
             UnnecessarySageCount = i;
-             ui->updateLabel->setText("");
+            ui->updateLabel->setText("");
         } );
         connect(WidgetList[i],SIGNAL(itemClicked(QListWidgetItem*)),this,SLOT(selectDeleteIteam(QListWidgetItem*)));
 
@@ -322,6 +310,57 @@ void sourceManager::selectDeleteIteam(QListWidgetItem *item)
     qDebug() << "address : " << pwig->ui->address_Label->text() ;
 }
 
+//change按钮点击回调
+void sourceManager::changeBtnClicked()
+{
+    sourceInformationWidget* pwig =static_cast<sourceInformationWidget*> (selectWidget->itemWidget(delete_item));
+    QDBusInterface *serviceInterface = new QDBusInterface("com.softSource.manager",
+                                                          "/com/softSource/Manager",
+                                                          "com.softSource.manager.interface",
+                                                          QDBusConnection::systemBus());
+    if(!serviceInterface->isValid())
+    {
+        qDebug() << "Service Interface: " << qPrintable(QDBusConnection::systemBus().lastError().message());
+        return;
+    }
+    QVariantList sourceChange;
+
+    addSource *addSourcewidget = new addSource();
+
+    QStringList Address = pwig->ui->address_Label->text().split(" ");
+
+    addSourcewidget->ui->addBtn->setText("更改");
+    addSourcewidget->ui->add_lineEdit->setText(Address.at(1));//网址
+    addSourcewidget->ui->version_lineEdit->setText(Address.at(2));//版本
+    QString type = Address.at(0);//类型
+    if(type.compare("deb") == 0){
+        addSourcewidget->ui->deb->setChecked(true);
+        addSourcewidget->ui->debsrc->setChecked(false);
+    }else{
+        addSourcewidget->ui->deb->setChecked(false);
+        addSourcewidget->ui->debsrc->setChecked(true);
+    }
+    for(int i=3; i<Address.count(); i++)//分类目录
+    {
+        QString branch = Address.at(i);
+        if(branch.compare("main") == 0){
+            addSourcewidget->ui->main->setChecked(true);
+        }else if(branch.compare("restricted") == 0){
+            addSourcewidget->ui->restricted->setChecked(true);
+        }else if(branch.compare("universe") == 0){
+            addSourcewidget->ui->universe->setChecked(true);
+        }else if(branch.compare("multiverse") == 0){
+            addSourcewidget->ui->multiverse->setChecked(true);
+        }else{
+            addSourcewidget->ui->suffix_lineEdit->setText(branch+" ");
+        }
+    }
+
+    addSourcewidget->exec();
+
+
+}
+
 //删除按钮点击回调
 void sourceManager::deleteBtnClicked()
 {
@@ -374,11 +413,11 @@ void sourceManager::questionMessage()
     }
 }
 
-//想源文件内添加
+//添加源按钮回调
 void sourceManager::addBtnClicked()
 {
     QDBusInterface *serviceInterface = new QDBusInterface("com.softSource.manager",
-                                                          "/com/softSource/Manager/xxx",
+                                                          "/com/softSource/Manager",
                                                           "com.softSource.manager.interface",
                                                           QDBusConnection::systemBus());
     if(!serviceInterface->isValid())
@@ -386,12 +425,9 @@ void sourceManager::addBtnClicked()
         qDebug() << "Service Interface: " << qPrintable(QDBusConnection::systemBus().lastError().message());
         return;
     }
-
     QVariantList sourceDelete;
-
     addSource *addSourcewidget = new addSource();
     addSourcewidget->exec();
-
     if(addSourcewidget->ui->preview_lineEdit->text().isEmpty())
     {
         return ;
@@ -400,7 +436,6 @@ void sourceManager::addBtnClicked()
     {
         return;
     }
-
     QString sourceinfo = addSourcewidget->ui->preview_lineEdit->text();
 
     if(!selectWidget->objectName().compare("sources.list"))
@@ -413,7 +448,6 @@ void sourceManager::addBtnClicked()
         sourceDelete<< QVariant::fromValue("/etc/apt/sources.list.d/"+selectWidget->objectName())
                     << QVariant::fromValue(sourceinfo);
     }
-
     qDebug() <<sourceinfo;
     serviceInterface->asyncCall("addSource", sourceDelete);
     addForListwidget(selectWidget, sourceinfo);
@@ -428,9 +462,15 @@ void sourceManager::addForListwidget(QListWidget *ListWidget, QString address)
     ListWidget->setItemWidget(aItem,widget);
     QStringList Address = address.split(" ");
     widget->ui->address_Label->setText(address);
-    widget->ui->type_Label->setText(Address.at(0));
+    QString type = Address.at(0);
+    if(type.compare("deb") == 0){
+        widget->ui->type_Label->setText("软件源");
+    }else{
+        widget->ui->type_Label->setText("源码源");
+    }
 }
 
+//apt-get update
 void sourceManager::updateBtnClicked()
 {
     QDBusInterface *serviceInterface = new QDBusInterface("com.softSource.manager",
@@ -446,17 +486,17 @@ void sourceManager::updateBtnClicked()
     ui->updateLabel->setText("正在更新");
 }
 
+//接收后台执行成功返回信号
 void sourceManager::updateOverSlot(QString str)
 {
     qDebug() << "更新结束"<<str;
     ui->updateLabel->setText(str);
-
 }
 
+//设置主源
 void sourceManager::setSourceBtnClicked()
 {
     QVariantList sourceFileName;
-
     QDBusInterface *serviceInterface = new QDBusInterface("com.softSource.manager",
                                                           "/com/softSource/Manager",
                                                           "com.softSource.manager.interface",

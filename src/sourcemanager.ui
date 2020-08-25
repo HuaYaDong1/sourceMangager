@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1019</width>
-    <height>643</height>
+    <width>1198</width>
+    <height>626</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -209,6 +209,25 @@
          </size>
         </property>
        </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="changeBtn">
+        <property name="minimumSize">
+         <size>
+          <width>200</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>200</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>change</string>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QPushButton" name="deleteBtn">

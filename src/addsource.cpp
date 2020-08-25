@@ -7,9 +7,9 @@ addSource::addSource(QWidget *parent) :
     ui(new Ui::addSource)
 {
     ui->setupUi(this);
-    ui->add_lineEdit->setPlaceholderText("输入网址");
+    ui->add_lineEdit->setPlaceholderText("输入服务器地址");
     ui->version_lineEdit->setPlaceholderText("自定义版本");
-    ui->suffix_lineEdit->setPlaceholderText("自定义分支");
+    ui->suffix_lineEdit->setPlaceholderText("自定义分类目录");
     ui->preview_lineEdit->setPlaceholderText("预览");
     ui->preview_lineEdit->setFocusPolicy(Qt::NoFocus);
     ui->preview_lineEdit->setEnabled(false);
@@ -18,6 +18,7 @@ addSource::addSource(QWidget *parent) :
     typeStr = "deb";
     branchStr = "main";
     isAddBtnClicked = false;
+    versionStr = "v10";
     connect(ui->add_lineEdit, SIGNAL(textChanged(const QString &)), this,SLOT(on_add_lineEdit_textChanged(const QString &)));
     connect(ui->version_lineEdit, SIGNAL(textChanged(const QString &)), this,SLOT(on_version_lineEdit_textChanged(const QString &)));
     connect(ui->suffix_lineEdit, SIGNAL(textChanged(const QString &)), this,SLOT(on_suffix_lineEdit_textChanged(const QString &)));
@@ -34,6 +35,8 @@ addSource::addSource(QWidget *parent) :
     connect(ui->comboBox, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(versionBoxSel(const QString &)));
     connect(ui->addBtn, SIGNAL(clicked()), this, SLOT(addBtnClicked()) );
     connect(ui->cancelBtn, SIGNAL(clicked()), this, SLOT(cancelBtnClicked()) );
+
+    ui->version_lineEdit->setFocusPolicy(Qt::NoFocus);
 }
 
 addSource::~addSource()
@@ -43,18 +46,22 @@ addSource::~addSource()
 
 void addSource::on_add_lineEdit_textChanged(const QString &arg1)
 {
+    ui->add_lineEdit->setStyleSheet("QLineEdit{border:1px solid gray border-radius:1px}");
+
     webStr = arg1;
     setSource();
 }
 
 void addSource::on_version_lineEdit_textChanged(const QString &arg1)
 {
+    ui->version_lineEdit->setStyleSheet("QLineEdit{border:1px solid gray border-radius:1px}");
     versionStr = arg1;
     setSource();
 }
 
 void addSource::on_suffix_lineEdit_textChanged(const QString &arg1)
 {
+    ui->suffix_lineEdit->setStyleSheet("QLineEdit{border:1px solid gray border-radius:1px}");
     suffixStr = arg1;
     ui->comboBox->setCurrentIndex(1);
     setSource();
@@ -62,7 +69,7 @@ void addSource::on_suffix_lineEdit_textChanged(const QString &arg1)
 
 void addSource::on_preview_lineEdit_textChanged(const QString &arg1)
 {
-
+    qDebug()<<arg1;
 }
 
 void addSource::debStateChanged(int state)
@@ -85,6 +92,8 @@ void addSource::debSrcStateChanged(int state)
 
 void addSource::branchStrupdate(int state)
 {
+    ui->suffix_lineEdit->setStyleSheet("QLineEdit{border:1px solid gray border-radius:1px}");
+
     qDebug()<<state;
     branchStr = "";
     if(ui->main->isChecked())
@@ -109,7 +118,14 @@ void addSource::branchStrupdate(int state)
 
 void addSource::versionBoxSel(const QString &text)
 {
-    versionStr = text;
+    ui->version_lineEdit->setStyleSheet("QLineEdit{border:1px solid gray border-radius:1px}");
+    if(text.compare("手动编辑") == 0){
+         ui->version_lineEdit->setFocusPolicy(Qt::StrongFocus);
+         versionStr = "";
+    }else{
+         ui->version_lineEdit->setFocusPolicy(Qt::NoFocus);
+         versionStr = text;
+    }
     qDebug()<<versionStr;
     setSource();
 }
@@ -123,6 +139,36 @@ QString addSource::setSource()
 
 void addSource::addBtnClicked()
 {
+    if(ui->add_lineEdit->text().isEmpty()){
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::warning(this, tr("warning"),  tr("地址不能为空"), QMessageBox::Yes);
+        if(reply == QMessageBox::Yes)
+        {
+            ui->add_lineEdit->setStyleSheet("QLineEdit{border:3px solid red }");
+            return ;
+        }
+    }
+
+    if(branchStr.compare("")==0 && suffixStr.compare("")==0){
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::warning(this, tr("warning"),  tr("分类目录不能为空"), QMessageBox::Yes);
+        if(reply == QMessageBox::Yes)
+        {
+            ui->suffix_lineEdit->setStyleSheet("QLineEdit{border:3px solid red }");
+            return ;
+        }
+    }
+
+    if(ui->version_lineEdit->text().isEmpty() && ui->comboBox->currentText().compare("手动编辑")==0){
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::warning(this, tr("warning"),  tr("版本不能为空"), QMessageBox::Yes);
+        if(reply == QMessageBox::Yes)
+        {
+            ui->version_lineEdit->setStyleSheet("QLineEdit{border:3px solid red }");
+            return ;
+        }
+    }
+
     isAddBtnClicked = true;
     this->close();
 }
