@@ -53,19 +53,19 @@ OBJECTS_DIR   = ./
 ####### Files
 
 SOURCES       = addsource.cpp \
-		datetypewidget.cpp \
+		createsourcewidget.cpp \
 		delayrefreshthread.cpp \
 		downloadspendrefreshthread.cpp \
 		main.cpp \
 		sourceinformationwidget.cpp \
 		sourcemanager.cpp \
 		sourceinterface.cpp moc_addsource.cpp \
-		moc_datetypewidget.cpp \
+		moc_createsourcewidget.cpp \
 		moc_sourceinformationwidget.cpp \
 		moc_sourcemanager.cpp \
 		moc_sourceinterface.cpp
 OBJECTS       = addsource.o \
-		datetypewidget.o \
+		createsourcewidget.o \
 		delayrefreshthread.o \
 		downloadspendrefreshthread.o \
 		main.o \
@@ -73,7 +73,7 @@ OBJECTS       = addsource.o \
 		sourcemanager.o \
 		sourceinterface.o \
 		moc_addsource.o \
-		moc_datetypewidget.o \
+		moc_createsourcewidget.o \
 		moc_sourceinformationwidget.o \
 		moc_sourcemanager.o \
 		moc_sourceinterface.o
@@ -160,13 +160,13 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
 		sourceManager.pro addsource.h \
-		datetypewidget.h \
+		createsourcewidget.h \
 		delayrefreshthread.h \
 		downloadspendrefreshthread.h \
 		sourceinformationwidget.h \
 		sourcemanager.h \
 		sourceinterface.h addsource.cpp \
-		datetypewidget.cpp \
+		createsourcewidget.cpp \
 		delayrefreshthread.cpp \
 		downloadspendrefreshthread.cpp \
 		main.cpp \
@@ -181,7 +181,7 @@ TARGET        = sourceManager
 first: all
 ####### Build rules
 
-sourceManager: ui_addsource.h ui_datetypewidget.h ui_sourceinformationwidget.h ui_sourcemanager.h $(OBJECTS)  
+sourceManager: ui_addsource.h ui_createsourcewidget.h ui_sourceinformationwidget.h ui_sourcemanager.h $(OBJECTS)  
 	$(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(OBJCOMP) $(LIBS)
 
 Makefile.sourceManager: sourceManager.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
@@ -366,9 +366,9 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents addsource.h datetypewidget.h delayrefreshthread.h downloadspendrefreshthread.h sourceinformationwidget.h sourcemanager.h sourceinterface.h $(DISTDIR)/
-	$(COPY_FILE) --parents addsource.cpp datetypewidget.cpp delayrefreshthread.cpp downloadspendrefreshthread.cpp main.cpp sourceinformationwidget.cpp sourcemanager.cpp sourceinterface.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents addsource.ui datetypewidget.ui sourceinformationwidget.ui sourcemanager.ui $(DISTDIR)/
+	$(COPY_FILE) --parents addsource.h createsourcewidget.h delayrefreshthread.h downloadspendrefreshthread.h sourceinformationwidget.h sourcemanager.h sourceinterface.h $(DISTDIR)/
+	$(COPY_FILE) --parents addsource.cpp createsourcewidget.cpp delayrefreshthread.cpp downloadspendrefreshthread.cpp main.cpp sourceinformationwidget.cpp sourcemanager.cpp sourceinterface.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents addsource.ui createsourcewidget.ui sourceinformationwidget.ui sourcemanager.ui $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -399,18 +399,18 @@ compiler_moc_predefs_clean:
 moc_predefs.h: /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 	g++ -pipe -g -O2 -fdebug-prefix-map=/home/hyd/source_Manager/sourceManager/sourceMangager=. -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 -std=gnu++11 -Wall -W -dM -E -o moc_predefs.h /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_addsource.cpp moc_datetypewidget.cpp moc_sourceinformationwidget.cpp moc_sourcemanager.cpp moc_sourceinterface.cpp
+compiler_moc_header_make_all: moc_addsource.cpp moc_createsourcewidget.cpp moc_sourceinformationwidget.cpp moc_sourcemanager.cpp moc_sourceinterface.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_addsource.cpp moc_datetypewidget.cpp moc_sourceinformationwidget.cpp moc_sourcemanager.cpp moc_sourceinterface.cpp
+	-$(DEL_FILE) moc_addsource.cpp moc_createsourcewidget.cpp moc_sourceinformationwidget.cpp moc_sourcemanager.cpp moc_sourceinterface.cpp
 moc_addsource.cpp: addsource.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
 	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/hyd/source_Manager/sourceManager/sourceMangager/src/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/hyd/source_Manager/sourceManager/sourceMangager/src -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtDBus -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include addsource.h -o moc_addsource.cpp
 
-moc_datetypewidget.cpp: datetypewidget.h \
+moc_createsourcewidget.cpp: createsourcewidget.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/hyd/source_Manager/sourceManager/sourceMangager/src/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/hyd/source_Manager/sourceManager/sourceMangager/src -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtDBus -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include datetypewidget.h -o moc_datetypewidget.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/hyd/source_Manager/sourceManager/sourceMangager/src/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/hyd/source_Manager/sourceManager/sourceMangager/src -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtDBus -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include createsourcewidget.h -o moc_createsourcewidget.cpp
 
 moc_sourceinformationwidget.cpp: sourceinformationwidget.h \
 		moc_predefs.h \
@@ -431,16 +431,16 @@ compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
-compiler_uic_make_all: ui_addsource.h ui_datetypewidget.h ui_sourceinformationwidget.h ui_sourcemanager.h
+compiler_uic_make_all: ui_addsource.h ui_createsourcewidget.h ui_sourceinformationwidget.h ui_sourcemanager.h
 compiler_uic_clean:
-	-$(DEL_FILE) ui_addsource.h ui_datetypewidget.h ui_sourceinformationwidget.h ui_sourcemanager.h
+	-$(DEL_FILE) ui_addsource.h ui_createsourcewidget.h ui_sourceinformationwidget.h ui_sourcemanager.h
 ui_addsource.h: addsource.ui \
 		/usr/lib/qt5/bin/uic
 	/usr/lib/qt5/bin/uic addsource.ui -o ui_addsource.h
 
-ui_datetypewidget.h: datetypewidget.ui \
+ui_createsourcewidget.h: createsourcewidget.ui \
 		/usr/lib/qt5/bin/uic
-	/usr/lib/qt5/bin/uic datetypewidget.ui -o ui_datetypewidget.h
+	/usr/lib/qt5/bin/uic createsourcewidget.ui -o ui_createsourcewidget.h
 
 ui_sourceinformationwidget.h: sourceinformationwidget.ui \
 		/usr/lib/qt5/bin/uic
@@ -464,9 +464,9 @@ addsource.o: addsource.cpp addsource.h \
 		ui_addsource.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o addsource.o addsource.cpp
 
-datetypewidget.o: datetypewidget.cpp datetypewidget.h \
-		ui_datetypewidget.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o datetypewidget.o datetypewidget.cpp
+createsourcewidget.o: createsourcewidget.cpp createsourcewidget.h \
+		ui_createsourcewidget.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o createsourcewidget.o createsourcewidget.cpp
 
 delayrefreshthread.o: delayrefreshthread.cpp delayrefreshthread.h \
 		sourceinterface.h
@@ -494,7 +494,9 @@ sourcemanager.o: sourcemanager.cpp sourcemanager.h \
 		delayrefreshthread.h \
 		addsource.h \
 		ui_addsource.h \
-		downloadspendrefreshthread.h
+		downloadspendrefreshthread.h \
+		createsourcewidget.h \
+		ui_createsourcewidget.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sourcemanager.o sourcemanager.cpp
 
 sourceinterface.o: sourceinterface.cpp sourceinterface.h
@@ -503,8 +505,8 @@ sourceinterface.o: sourceinterface.cpp sourceinterface.h
 moc_addsource.o: moc_addsource.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_addsource.o moc_addsource.cpp
 
-moc_datetypewidget.o: moc_datetypewidget.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_datetypewidget.o moc_datetypewidget.cpp
+moc_createsourcewidget.o: moc_createsourcewidget.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_createsourcewidget.o moc_createsourcewidget.cpp
 
 moc_sourceinformationwidget.o: moc_sourceinformationwidget.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_sourceinformationwidget.o moc_sourceinformationwidget.cpp

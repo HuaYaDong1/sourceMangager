@@ -39,6 +39,9 @@ private slots:
     void updateBtnClicked();
     void updateOverSlot(QString );
     void setSourceBtnClicked();
+    void createSourceBtnClicked();
+    void stopBtnClicked();
+    void deleteSourcePageBtnClicked();
 
 private:
     Ui::sourceManager *ui;
@@ -77,6 +80,8 @@ private:
 
     QListWidget * mainWidget;
     QListWidget * UnnecessaryWidget;
+
+    bool Nettestflag;
 
 
 signals:

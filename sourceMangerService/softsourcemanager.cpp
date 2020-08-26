@@ -126,20 +126,37 @@ void softSourceManager::changedSource(QVariantList sourceInfo)
 //arg1 srclist arg2 filename
 void softSourceManager::addExtensionSource(QVariantList sourceInfo)
 {
-    QStringList sourceNameList = sourceInfo.at(0).toStringList();
-    QString sourceFileName = sourceInfo.at(1).toString();
+    qDebug()<<sourceInfo.at(0).toString();
+    //QStringList sourceNameList = sourceInfo.at(0).toStringList();
+    QString sourceFileName = sourceInfo.at(0).toString();
 
     QFile writeFile(sourceFileName);
 
-    if(!writeFile.open(QIODevice::WriteOnly | QIODevice::Text)){
+    if(!writeFile.open(QIODevice::WriteOnly | QIODevice::Text )){
         qDebug()<<"open file failed!";
         return ;
     }
-    QTextStream stream(&writeFile);
-    for(int i = 0;i<sourceNameList.count();i++){
-        QString tempStr=sourceNameList.at(i);
-        stream<<tempStr<<'\n';
-    }
+    //    QTextStream stream(&writeFile);
+    //    for(int i = 0;i<sourceNameList.count();i++){
+    //        QString tempStr=sourceNameList.at(i);
+    //        stream<<tempStr<<'\n';
+    //    }
     writeFile.close();
 }
 
+void softSourceManager::deleteSourceFile(QVariantList sourceInfo)
+{
+    qDebug()<<sourceInfo.at(0).toString();
+    QString sourceFileName = sourceInfo.at(0).toString();
+
+    QString cmd = QString("rm /etc/apt/sources.list.d/%1").arg(sourceFileName);
+    QProcess process;
+    process.start(cmd);
+    process.waitForFinished(-1);
+    qDebug()<<"删除完成";
+
+    QDBusMessage msg = QDBusMessage::createSignal("/citos/client/path", "com.client.test","updateOver");
+    msg<<"删除完成";
+    bool sendResult = QDBusConnection::systemBus().send(msg);
+    qDebug()<<sendResult;
+}

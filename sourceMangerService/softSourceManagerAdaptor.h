@@ -33,6 +33,9 @@ class InterfaceAdaptor: public QDBusAbstractAdaptor
     Q_CLASSINFO("D-Bus Interface", "com.softSource.manager.interface")
     Q_CLASSINFO("D-Bus Introspection", ""
 "  <interface name=\"com.softSource.manager.interface\">\n"
+"    <signal name=\"updateOver\">\n"
+"      <arg direction=\"out\" type=\"s\" name=\"arg\"/>\n"
+"    </signal>\n"
 "    <method name=\"addSource\">\n"
 "      <arg direction=\"in\" type=\"av\" name=\"sourceInfo\"/>\n"
 "    </method>\n"
@@ -49,6 +52,9 @@ class InterfaceAdaptor: public QDBusAbstractAdaptor
 "    <method name=\"addExtensionSource\">\n"
 "      <arg direction=\"in\" type=\"av\" name=\"sourceInfo\"/>\n"
 "    </method>\n"
+"    <method name=\"deleteSourceFile\">\n"
+"      <arg direction=\"in\" type=\"av\" name=\"sourceInfo\"/>\n"
+"    </method>\n"
 "  </interface>\n"
         "")
 public:
@@ -61,9 +67,11 @@ public Q_SLOTS: // METHODS
     void addSource(const QVariantList &sourceInfo);
     void changedSource(const QVariantList &sourceInfo);
     void deleteSource(const QVariantList &sourceInfo);
+    void deleteSourceFile(const QVariantList &sourceInfo);
     void setMainSource(const QVariantList &sourceFileName);
     void updateSource();
 Q_SIGNALS: // SIGNALS
+    void updateOver(const QString &arg);
 };
 
 #endif

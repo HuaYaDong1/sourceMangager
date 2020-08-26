@@ -156,6 +156,20 @@
        </widget>
       </item>
       <item>
+       <widget class="QPushButton" name="deleteSourcePageBtn">
+        <property name="text">
+         <string>删除源</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="createSourceBtn">
+        <property name="text">
+         <string>增加源</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="updateBtn">
         <property name="text">
          <string>update</string>
@@ -165,7 +179,14 @@
       <item>
        <widget class="QPushButton" name="refreshBtn">
         <property name="text">
-         <string> Network test</string>
+         <string>网络检测</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="stopBtn">
+        <property name="text">
+         <string>停止检测</string>
         </property>
        </widget>
       </item>

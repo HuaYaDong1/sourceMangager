@@ -19,7 +19,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     addsource.cpp \
-    datetypewidget.cpp \
+    createsourcewidget.cpp \
     delayrefreshthread.cpp \
     downloadspendrefreshthread.cpp \
     main.cpp \
@@ -29,7 +29,7 @@ SOURCES += \
 
 HEADERS += \
     addsource.h \
-    datetypewidget.h \
+    createsourcewidget.h \
     delayrefreshthread.h \
     downloadspendrefreshthread.h \
     sourceinformationwidget.h \
@@ -38,7 +38,7 @@ HEADERS += \
 
 FORMS += \
     addsource.ui \
-    datetypewidget.ui \
+    createsourcewidget.ui \
     sourceinformationwidget.ui \
     sourcemanager.ui
 
