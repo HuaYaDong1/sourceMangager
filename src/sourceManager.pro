@@ -21,20 +21,20 @@ SOURCES += \
     addsource.cpp \
     createsourcewidget.cpp \
     delayrefreshthread.cpp \
-    downloadspendrefreshthread.cpp \
     main.cpp \
     sourceinformationwidget.cpp \
     sourcemanager.cpp\
-    sourceinterface.cpp
+    sourceinterface.cpp \
+    testingupdatethread.cpp
 
 HEADERS += \
     addsource.h \
     createsourcewidget.h \
     delayrefreshthread.h \
-    downloadspendrefreshthread.h \
     sourceinformationwidget.h \
     sourcemanager.h\
-    sourceinterface.h
+    sourceinterface.h \
+    testingupdatethread.h
 
 FORMS += \
     addsource.ui \

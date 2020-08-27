@@ -170,7 +170,7 @@ QString sourceInterface::setPingToWidget(QString sourceName)
         }
     }
     else{
-        ret.append("N/A");
+        ret.append("无法连接");
     }
 
     qDebug()<<"ret="<<ret;

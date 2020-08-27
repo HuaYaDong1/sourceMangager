@@ -55,11 +55,11 @@ OBJECTS_DIR   = ./
 SOURCES       = addsource.cpp \
 		createsourcewidget.cpp \
 		delayrefreshthread.cpp \
-		downloadspendrefreshthread.cpp \
 		main.cpp \
 		sourceinformationwidget.cpp \
 		sourcemanager.cpp \
-		sourceinterface.cpp moc_addsource.cpp \
+		sourceinterface.cpp \
+		testingupdatethread.cpp moc_addsource.cpp \
 		moc_createsourcewidget.cpp \
 		moc_sourceinformationwidget.cpp \
 		moc_sourcemanager.cpp \
@@ -67,11 +67,11 @@ SOURCES       = addsource.cpp \
 OBJECTS       = addsource.o \
 		createsourcewidget.o \
 		delayrefreshthread.o \
-		downloadspendrefreshthread.o \
 		main.o \
 		sourceinformationwidget.o \
 		sourcemanager.o \
 		sourceinterface.o \
+		testingupdatethread.o \
 		moc_addsource.o \
 		moc_createsourcewidget.o \
 		moc_sourceinformationwidget.o \
@@ -162,17 +162,17 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		sourceManager.pro addsource.h \
 		createsourcewidget.h \
 		delayrefreshthread.h \
-		downloadspendrefreshthread.h \
 		sourceinformationwidget.h \
 		sourcemanager.h \
-		sourceinterface.h addsource.cpp \
+		sourceinterface.h \
+		testingupdatethread.h addsource.cpp \
 		createsourcewidget.cpp \
 		delayrefreshthread.cpp \
-		downloadspendrefreshthread.cpp \
 		main.cpp \
 		sourceinformationwidget.cpp \
 		sourcemanager.cpp \
-		sourceinterface.cpp
+		sourceinterface.cpp \
+		testingupdatethread.cpp
 QMAKE_TARGET  = sourceManager
 DESTDIR       = 
 TARGET        = sourceManager
@@ -366,8 +366,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents addsource.h createsourcewidget.h delayrefreshthread.h downloadspendrefreshthread.h sourceinformationwidget.h sourcemanager.h sourceinterface.h $(DISTDIR)/
-	$(COPY_FILE) --parents addsource.cpp createsourcewidget.cpp delayrefreshthread.cpp downloadspendrefreshthread.cpp main.cpp sourceinformationwidget.cpp sourcemanager.cpp sourceinterface.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents addsource.h createsourcewidget.h delayrefreshthread.h sourceinformationwidget.h sourcemanager.h sourceinterface.h testingupdatethread.h $(DISTDIR)/
+	$(COPY_FILE) --parents addsource.cpp createsourcewidget.cpp delayrefreshthread.cpp main.cpp sourceinformationwidget.cpp sourcemanager.cpp sourceinterface.cpp testingupdatethread.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents addsource.ui createsourcewidget.ui sourceinformationwidget.ui sourcemanager.ui $(DISTDIR)/
 
 
@@ -472,12 +472,6 @@ delayrefreshthread.o: delayrefreshthread.cpp delayrefreshthread.h \
 		sourceinterface.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o delayrefreshthread.o delayrefreshthread.cpp
 
-downloadspendrefreshthread.o: downloadspendrefreshthread.cpp downloadspendrefreshthread.h \
-		sourceinformationwidget.h \
-		ui_sourceinformationwidget.h \
-		sourceinterface.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o downloadspendrefreshthread.o downloadspendrefreshthread.cpp
-
 main.o: main.cpp sourcemanager.h \
 		addsource.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
@@ -494,13 +488,19 @@ sourcemanager.o: sourcemanager.cpp sourcemanager.h \
 		delayrefreshthread.h \
 		addsource.h \
 		ui_addsource.h \
-		downloadspendrefreshthread.h \
+		testingupdatethread.h \
 		createsourcewidget.h \
 		ui_createsourcewidget.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sourcemanager.o sourcemanager.cpp
 
 sourceinterface.o: sourceinterface.cpp sourceinterface.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sourceinterface.o sourceinterface.cpp
+
+testingupdatethread.o: testingupdatethread.cpp testingupdatethread.h \
+		sourceinformationwidget.h \
+		ui_sourceinformationwidget.h \
+		sourceinterface.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o testingupdatethread.o testingupdatethread.cpp
 
 moc_addsource.o: moc_addsource.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_addsource.o moc_addsource.cpp

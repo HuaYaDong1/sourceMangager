@@ -22,6 +22,7 @@ private:
 public slots:
     void trueBtnClicked();
     void cancelBtnClicked();
+    void nameLineEdit_textChanged(const QString &arg1);
 };
 
 #endif // CREATESOURCEWIDGET_H

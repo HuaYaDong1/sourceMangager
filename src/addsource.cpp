@@ -149,6 +149,22 @@ void addSource::addBtnClicked()
         }
     }
 
+    QRegExp rx("(https?|ftp|file)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]");//正则表达式判断网址格式是否正确
+    int pos=0;
+    QRegExpValidator v(rx, 0);
+    QString http = ui->add_lineEdit->text();
+    if (2==v.validate(http,pos))
+    {
+    }else{
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::warning(this, tr("warning"),  tr("输入格式不正确"), QMessageBox::Yes);
+        if(reply == QMessageBox::Yes)
+        {
+            ui->add_lineEdit->setStyleSheet("QLineEdit{border:3px solid red }");
+            return ;
+        }
+    }
+
     if(branchStr.compare("")==0 && suffixStr.compare("")==0){
         QMessageBox::StandardButton reply;
         reply = QMessageBox::warning(this, tr("warning"),  tr("分类目录不能为空"), QMessageBox::Yes);

@@ -42,6 +42,7 @@ private slots:
     void createSourceBtnClicked();
     void stopBtnClicked();
     void deleteSourcePageBtnClicked();
+    void testingUpdateBtnClicked();
 
 private:
     Ui::sourceManager *ui;
@@ -56,9 +57,9 @@ private:
 
     sourceInformationWidget *widget[1024];
 
-    QWidget * page[1024];
-    QListWidget * WidgetList[1024];
-    QPushButton *unnecessarySourceBtn[1024];
+//    QWidget * page[1024];
+//    QListWidget * WidgetList[1024];
+//    QPushButton *unnecessarySourceBtn[1024];
 
     QListWidgetItem *delete_item;
     QListWidget  *selectWidget;
@@ -83,6 +84,8 @@ private:
 
     bool Nettestflag;
 
+    QWidget *seletcPage;
+    QPushButton *selectBtn ;
 
 signals:
 

@@ -11,7 +11,7 @@
 #include <QDBusPendingCall>
 #include "addsource.h"
 #include "ui_addsource.h"
-#include "downloadspendrefreshthread.h"
+#include "testingupdatethread.h"
 #include "createsourcewidget.h"
 #include "ui_createsourcewidget.h"
 
@@ -24,6 +24,7 @@ sourceManager::sourceManager(QWidget *parent)
     sourceinterface = new sourceInterface;
     deleteFlag = 0;
     changeFlag = 0;
+    UnnecessarySageCount = 0;
 
     connect(ui->deleteBtn, SIGNAL(clicked()), this, SLOT(deleteBtnClicked()) );
     connect(ui->refreshBtn, SIGNAL(clicked()), this, SLOT(refreshBtnClicked()) );
@@ -36,6 +37,7 @@ sourceManager::sourceManager(QWidget *parent)
     connect(ui->createSourceBtn, SIGNAL(clicked()), this, SLOT(createSourceBtnClicked()));
     connect(ui->stopBtn, SIGNAL(clicked()), this, SLOT(stopBtnClicked()));
     connect(ui->deleteSourcePageBtn, SIGNAL(clicked()), this, SLOT(deleteSourcePageBtnClicked()));
+    connect(ui->testingUpdateBtn, SIGNAL(clicked()), this, SLOT(testingUpdateBtnClicked()));
 
 
     QDBusConnection::systemBus().registerObject("/citos/client/path",
@@ -59,6 +61,7 @@ sourceManager::sourceManager(QWidget *parent)
     ui->sourceControlWidget->hide();
     ui->createSourceBtn->hide();
     ui->deleteSourcePageBtn->hide();
+    ui->page_3->hide();
 
     connect(sourceinterface,SIGNAL(downloadover(QString ,QListWidget *, int )),this,SLOT(downloadOverSlot(QString ,QListWidget *, int )));
     connect(sourceinterface,SIGNAL(downloadspeed(QString ,QListWidget *, int )),this,SLOT(downloadspeed(QString ,QListWidget *, int )));
@@ -76,7 +79,7 @@ void sourceManager::downloadOverSlot(QString speed,QListWidget *Listwidget, int 
         return ;
     }
     sourceInformationWidget* pwig = static_cast<sourceInformationWidget*> (Listwidget->itemWidget(Listwidget->item(Num)));
-    if(!pwig->ui->delay_Label->text().compare("N/A") == 0)
+    if(!pwig->ui->delay_Label->text().compare("无法连接") == 0)
     {
         pwig->ui->spend_Label->setText(speed);
     }else{
@@ -84,23 +87,26 @@ void sourceManager::downloadOverSlot(QString speed,QListWidget *Listwidget, int 
     }
 
     Num++;
-    if(Num != Listwidget->count())
+    while(Num != Listwidget->count())
     {
         sourceInformationWidget* pwig1 = static_cast<sourceInformationWidget*> (Listwidget->itemWidget(Listwidget->item(Num)));
-        qDebug()<<pwig1->ui->address_Label->text();
-        if(!pwig1->ui->delay_Label->text().compare("N/A") == 0)
+        qDebug()<<pwig1->ui->address_Label->text()<<"~~~~~~~~~~~~~~~~~~~~~";
+        if(!pwig1->ui->delay_Label->text().compare("无法连接") == 0)
         {
             sourceinterface->getDownloadSpeedFromSource(pwig1->ui->address_Label->text(), Listwidget, Num);
+            break;
+        }
+        else
+        {
+            pwig1->ui->spend_Label->setText("无法连接");
         }
         qDebug()<<Num  << Listwidget->count()-1;
-    }else{
-        return ;
+        Num++;
     }
 }
 
 void sourceManager::downloadspeed(QString speed,QListWidget *Listwidget, int Num)
 {
-    qDebug()<<speed<<"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
     sourceInformationWidget* pwig = static_cast<sourceInformationWidget*> (Listwidget->itemWidget(Listwidget->item(Num)));
     pwig->ui->spend_Label->setText(speed);
 }
@@ -118,6 +124,7 @@ void sourceManager::pageMainSourceBtnClicked()
     ui->setSourceBtn->show();
     ui->createSourceBtn->hide();
     ui->deleteSourcePageBtn->hide();
+    ui->testingUpdateBtn->show();
 }
 
 //次源页切换
@@ -132,6 +139,7 @@ void sourceManager::pageUnnecessaryBtnClicked()
     ui->setSourceBtn->hide();
     ui->createSourceBtn->show();
     ui->deleteSourcePageBtn->show();
+    ui->testingUpdateBtn->hide();
 }
 
 //搜查主源个数,添加按钮，页面，及listwidget
@@ -212,9 +220,11 @@ void sourceManager::searchUnnecessarySourcesNumber()
             UnnecessarySourceName = SourceList.at(i);
             UnnecessarySageCount = i;
             ui->updateLabel->setText("");
+            seletcPage = page[i];
+            selectBtn = unnecessarySourceBtn[i];
+            qDebug()<<i+1<<"~~~~~~~~~~~~~~~~~~~~~~~~~~";
         } );
         connect(WidgetList[i],SIGNAL(itemClicked(QListWidgetItem*)),this,SLOT(selectDeleteIteam(QListWidgetItem*)));
-
         UnnecessaryWidget = WidgetList[0];
         qDebug()<<SourceList.at(i);
         showUnnecessarySource(WidgetList[i], i);
@@ -312,7 +322,7 @@ void sourceManager::refreshBtnClicked()
     for(int i = 1; i < selectWidget->count(); i++)
     {
         sourceInformationWidget* pwig = static_cast<sourceInformationWidget*> (selectWidget->itemWidget(selectWidget->item(i)));
-        if(!pwig->ui->delay_Label->text().compare("N/A") == 0)//跳过无法连接的源
+        if(!pwig->ui->delay_Label->text().compare("无法连接") == 0)//跳过无法连接的源
         {
             sourceinterface->getDownloadSpeedFromSource(pwig->ui->address_Label->text(), selectWidget, i);
             break;
@@ -341,6 +351,7 @@ void sourceManager::selectDeleteIteam(QListWidgetItem *item)
 //change按钮点击回调
 void sourceManager::changeBtnClicked()
 {
+    int number;
     if(!changeFlag)
     {
         return;
@@ -362,8 +373,6 @@ void sourceManager::changeBtnClicked()
     QStringList Address = pwig->ui->address_Label->text().split(" ");
     sourceChange << QVariant::fromValue(pwig->ui->address_Label->text());//原数据
     addSourcewidget->ui->addBtn->setText("更改");
-    addSourcewidget->ui->add_lineEdit->setText(Address.at(1));//网址
-    addSourcewidget->ui->version_lineEdit->setText(Address.at(2));//版本
     QString type = Address.at(0);//类型
     if(type.compare("deb") == 0){
         addSourcewidget->ui->deb->setChecked(true);
@@ -372,7 +381,21 @@ void sourceManager::changeBtnClicked()
         addSourcewidget->ui->deb->setChecked(false);
         addSourcewidget->ui->debsrc->setChecked(true);
     }
-    for(int i=3; i<Address.count(); i++)//分类目录
+
+    for(int i=1; i<Address.count(); i++)//网址
+    {
+        QRegExp rx("(https?|ftp|file)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]");//正则表达式判断网址格式是否正确
+        int pos=0;
+        QRegExpValidator v(rx, 0);
+        QString http =Address.at(i);
+        if (2==v.validate(http,pos))
+        {
+            addSourcewidget->ui->add_lineEdit->setText(Address.at(i));//网址
+            number = i+1;
+        }
+    }
+    addSourcewidget->ui->version_lineEdit->setText(Address.at(number));//版本
+    for(int i=number+1; i<Address.count(); i++)//分类目录
     {
         QString branch = Address.at(i);
         if(branch.compare("main") == 0){
@@ -513,6 +536,8 @@ void sourceManager::addForListwidget(QListWidget *ListWidget, QString address)
     }else{
         widget->ui->type_Label->setText("源码源");
     }
+    widget->ui->delay_Label->setText("等待检测");
+    widget->ui->spend_Label->setText("等待检测");
 }
 
 //apt-get update
@@ -576,21 +601,24 @@ void sourceManager::createSourceBtnClicked()
         WidgetList->setObjectName(name);
         ui->verticalLayout_3->addWidget(WidgetList);
         verticalLayout->addWidget(WidgetList);
+        int i = pageNum;
         connect(unnecessarySourceBtn, &QPushButton::clicked, this, [=]()
         {
-            ui->stackedWidget_3->setCurrentIndex(pageNum+1);
+            ui->stackedWidget_3->setCurrentIndex(i+1);
             ui->label->setText(name);
             selectWidget = WidgetList;
             UnnecessaryWidget = WidgetList;
             UnnecessarySourceName = name;
-            UnnecessarySageCount = pageNum;
+            UnnecessarySageCount = i;
             ui->updateLabel->setText("");
+            seletcPage = page;
+            selectBtn = unnecessarySourceBtn;
+            qDebug()<<i+1<<"~~~~~~~~~~~~~~~~~~~~~~~~~~";
         } );
         connect(WidgetList,SIGNAL(itemClicked(QListWidgetItem*)),this,SLOT(selectDeleteIteam(QListWidgetItem*)));
 
         UnnecessaryWidget = WidgetList;
         qDebug()<<name;
-
 
         QVariantList sourceFileName;
         QDBusInterface *serviceInterface = new QDBusInterface("com.softSource.manager",
@@ -604,6 +632,8 @@ void sourceManager::createSourceBtnClicked()
         }
         sourceFileName<< QVariant::fromValue("/etc/apt/sources.list.d/"+name);
         serviceInterface->asyncCall("addExtensionSource", sourceFileName);
+        initializationList(WidgetList,+1);//初始化列表框
+        pageNum++;
     }
 }
 
@@ -630,13 +660,66 @@ void sourceManager::deleteSourcePageBtnClicked()
 
     QMessageBox::StandardButton reply;
     reply = QMessageBox::question(this, tr("question"),
-                                  tr("delete ?"),
+                                  tr("delete 当前页面源 ?"),
                                   QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
 
     if(reply == QMessageBox::Yes){
         serviceInterface->asyncCall("deleteSourceFile", sourceFileName);
         ui->updateLabel->setText("删除源");
+        //删除 页与 按钮
+        delete selectBtn;
+        //seletcPage->hide();
+        delete seletcPage;
     }else if (reply == QMessageBox::No){
     }else{}
 }
 
+//检测源是否为最新
+void sourceManager::testingUpdateBtnClicked()
+{
+//    testingUpdateThread *testingupdatethread = new testingUpdateThread(selectWidget);
+//    testingupdatethread->start();
+    QString name = selectWidget->objectName();
+    QStringList sourcelist1 = sourceinterface->getSourceAddressList("/etc/apt/sources.list");
+    QStringList sourcelist2 = sourceinterface->getSourceAddressList("/etc/apt/mainsources/"+name);
+    if(sourcelist1.count() != sourcelist2.count())
+    {
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::critical(this, tr("critical"),  tr("数量不同需要更新"), QMessageBox::Yes);
+        if(reply == QMessageBox::Yes)
+        {
+            return ;
+        }
+    }
+    else
+    {
+        for(int i = 0; i<sourcelist1.count(); i++)
+        {
+            bool flag = false;
+            QString source1 = sourcelist1.at(i);
+            for(int j = 0; j<sourcelist2.count(); j++)
+            {
+                QString source2 = sourcelist2.at(j);
+                if(source1.compare(source2) == 0)
+                {
+                    flag = true;
+                    break;
+                }
+            }
+            if(!flag){
+                QMessageBox::StandardButton reply;
+                reply = QMessageBox::critical(this, tr("critical"),  tr("内容不同需要更新"), QMessageBox::Yes);
+                if(reply == QMessageBox::Yes)
+                {
+                    return ;
+                }
+            }
+        }
+    }
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::information(this, tr("information"),  tr("完全相同不需要更新"), QMessageBox::Yes);
+    if(reply == QMessageBox::Yes)
+    {
+        return ;
+    }
+}
