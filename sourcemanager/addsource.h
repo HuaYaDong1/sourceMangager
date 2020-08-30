@@ -4,6 +4,8 @@
 #include <QWidget>
 #include <QDialog>
 #include <QMessageBox>
+#include <QDir>
+
 
 namespace Ui {
 class addSource;
@@ -41,8 +43,7 @@ private:
     QString branchStr;
 
     QString setSource();
-
-
+    QStringList getVersionList(QString fileName);
 };
 
 #endif // ADDSOURCE_H

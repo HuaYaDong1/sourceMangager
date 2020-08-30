@@ -37,6 +37,18 @@ addSource::addSource(QWidget *parent) :
     connect(ui->cancelBtn, SIGNAL(clicked()), this, SLOT(cancelBtnClicked()) );
 
     ui->version_lineEdit->setFocusPolicy(Qt::NoFocus);
+
+    QString matedataFile = "/tmp/sourcemanager/version";
+    QFile file(matedataFile);
+    if( file.exists()){
+        QStringList versionList = getVersionList("/tmp/sourcemanager/version");
+        ui->comboBox->addItems(versionList);
+        qDebug()<<versionList;
+    }else {
+        QStringList versionList1;
+        versionList1 <<"v10"<<"v10sp1"<<"2004"<<"2010"<<"手动编辑";
+        ui->comboBox->addItems(versionList1);
+    }
 }
 
 addSource::~addSource()
@@ -120,11 +132,11 @@ void addSource::versionBoxSel(const QString &text)
 {
     ui->version_lineEdit->setStyleSheet("QLineEdit{border:1px solid gray border-radius:1px}");
     if(text.compare("手动编辑") == 0){
-         ui->version_lineEdit->setFocusPolicy(Qt::StrongFocus);
-         versionStr = "";
+        ui->version_lineEdit->setFocusPolicy(Qt::StrongFocus);
+        versionStr = "";
     }else{
-         ui->version_lineEdit->setFocusPolicy(Qt::NoFocus);
-         versionStr = text;
+        ui->version_lineEdit->setFocusPolicy(Qt::NoFocus);
+        versionStr = text;
     }
     qDebug()<<versionStr;
     setSource();
@@ -192,4 +204,29 @@ void addSource::addBtnClicked()
 void addSource::cancelBtnClicked()
 {
     this->close();
+}
+
+QStringList addSource::getVersionList(QString fileName)
+{
+    QStringList sourceList;
+    QFile file(fileName);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        qDebug()<<fileName<<"----file open failed!";
+        return sourceList;
+    }
+    QTextStream in(&file);
+    QString line = in.readLine();
+    if((line.left(1).compare("#") !=0) && (line.compare("") !=0)){
+        sourceList<<line;
+    }
+    while(!line.isNull())//字符串有内容
+    {
+        line=in.readLine();//循环读取下行
+        if((line.left(1).compare("#") !=0) && (line.compare("") !=0)){
+            sourceList << line;
+        }
+    }
+    file.close();
+    return sourceList;
 }
