@@ -7,24 +7,40 @@
     <x>0</x>
     <y>0</y>
     <width>918</width>
-    <height>54</height>
+    <height>49</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout">
-   <item>
-    <widget class="QLabel" name="address_Label">
+  <layout class="QGridLayout" name="gridLayout">
+   <property name="leftMargin">
+    <number>9</number>
+   </property>
+   <item row="0" column="0">
+    <widget class="QCheckBox" name="address_Check">
+     <property name="text">
+      <string>CheckBox</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="3">
+    <widget class="QLabel" name="spend_Label">
+     <property name="maximumSize">
+      <size>
+       <width>100</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="styleSheet">
       <string notr="true"/>
      </property>
      <property name="text">
-      <string>address</string>
+      <string>speed</string>
      </property>
     </widget>
    </item>
-   <item>
+   <item row="0" column="1">
     <widget class="QLabel" name="type_Label">
      <property name="maximumSize">
       <size>
@@ -40,7 +56,7 @@
      </property>
     </widget>
    </item>
-   <item>
+   <item row="0" column="2">
     <widget class="QLabel" name="delay_Label">
      <property name="maximumSize">
       <size>
@@ -53,22 +69,6 @@
      </property>
      <property name="text">
       <string>delay</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QLabel" name="spend_Label">
-     <property name="maximumSize">
-      <size>
-       <width>100</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
-     <property name="text">
-      <string>speed</string>
      </property>
     </widget>
    </item>

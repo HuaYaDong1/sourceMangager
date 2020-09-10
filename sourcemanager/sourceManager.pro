@@ -3,7 +3,7 @@ QT       += core gui
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 QT += network
 QT  +=dbus
-
+LIBS += -lapt-pkg
 CONFIG += c++11
 
 # The following define makes your compiler emit warnings if you use
@@ -21,6 +21,7 @@ SOURCES += \
     addsource.cpp \
     createsourcewidget.cpp \
     delayrefreshthread.cpp \
+    form.cpp \
     main.cpp \
     sourceinformationwidget.cpp \
     sourcemanager.cpp\
@@ -31,6 +32,7 @@ HEADERS += \
     addsource.h \
     createsourcewidget.h \
     delayrefreshthread.h \
+    form.h \
     sourceinformationwidget.h \
     sourcemanager.h\
     sourceinterface.h \
@@ -39,6 +41,7 @@ HEADERS += \
 FORMS += \
     addsource.ui \
     createsourcewidget.ui \
+    form.ui \
     sourceinformationwidget.ui \
     sourcemanager.ui
 

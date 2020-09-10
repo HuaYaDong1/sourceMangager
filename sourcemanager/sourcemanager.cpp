@@ -65,6 +65,7 @@ sourceManager::sourceManager(QWidget *parent)
 
     connect(sourceinterface,SIGNAL(downloadover(QString ,QListWidget *, int )),this,SLOT(downloadOverSlot(QString ,QListWidget *, int )));
     connect(sourceinterface,SIGNAL(downloadspeed(QString ,QListWidget *, int )),this,SLOT(downloadspeed(QString ,QListWidget *, int )));
+    //ui->widget_2->setStyleSheet("");
 }
 
 sourceManager::~sourceManager()
@@ -86,14 +87,14 @@ void sourceManager::downloadOverSlot(QString speed,QListWidget *Listwidget, int 
         pwig->ui->spend_Label->setText("无法连接");
     }
 
-    Num++;
+    Num=Num+2;
     while(Num != Listwidget->count())
     {
         sourceInformationWidget* pwig1 = static_cast<sourceInformationWidget*> (Listwidget->itemWidget(Listwidget->item(Num)));
-        qDebug()<<pwig1->ui->address_Label->text()<<"~~~~~~~~~~~~~~~~~~~~~";
+        qDebug()<<pwig1->ui->address_Check->text()<<"~~~~~~~~~~~~~~~~~~~~~";
         if(!pwig1->ui->delay_Label->text().compare("无法连接") == 0)
         {
-            sourceinterface->getDownloadSpeedFromSource(pwig1->ui->address_Label->text(), Listwidget, Num);
+            sourceinterface->getDownloadSpeedFromSource(pwig1->ui->address_Check->text(), Listwidget, Num);
             break;
         }
         else
@@ -101,7 +102,7 @@ void sourceManager::downloadOverSlot(QString speed,QListWidget *Listwidget, int 
             pwig1->ui->spend_Label->setText("无法连接");
         }
         qDebug()<<Num  << Listwidget->count()-1;
-        Num++;
+        Num=Num+2;
     }
 }
 
@@ -245,10 +246,9 @@ void sourceManager::showMainSource(QListWidget *listWidget, int num)
     QStringList adddresslist = sourceinterface->getSourceAddressList("/etc/apt/mainsources/"+mainSourceList.at(num));
     QStringList typeList= sourceinterface->getSourceTypeList("/etc/apt/mainsources/"+mainSourceList.at(num));
 
-    initializationList(listWidget,adddresslist.count()+1);//初始化列表框
+    initializationList(listWidget,adddresslist.count());//初始化列表框
     fillInTheData(listWidget, adddresslist, typeList); //填充地址，类型，数据
     fillInTheDynamicData(listWidget, adddresslist.count());
-
 }
 
 //次源展示页回调
@@ -257,10 +257,9 @@ void sourceManager::showUnnecessarySource(QListWidget *listWidget, int num)
     QStringList adddresslist = sourceinterface->getSourceAddressList("/etc/apt/sources.list.d/"+SourceList.at(num));
     QStringList typeList= sourceinterface->getSourceTypeList("/etc/apt/sources.list.d/"+SourceList.at(num));
 
-    initializationList(listWidget,adddresslist.count()+1);//初始化列表框
+    initializationList(listWidget,adddresslist.count());//初始化列表框
     fillInTheData(listWidget, adddresslist, typeList); //填充地址，类型，数据
     fillInTheDynamicData(listWidget, adddresslist.count());
-
 }
 
 //初始化列表框
@@ -268,13 +267,29 @@ void sourceManager::initializationList(QListWidget *ListWidget, int sourseNum)
 {
     QScroller::grabGesture(ListWidget,QScroller::LeftMouseButtonGesture);
     ListWidget -> setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    ListWidget -> setFrameShape(QListWidget::NoFrame);
+
+    QListWidgetItem *aItem =new QListWidgetItem;
+    aItem->setSizeHint(QSize(50, 1));
+    ListWidget->addItem(aItem);
+    QWidget *line = new QWidget(ListWidget);
+    line->setStyleSheet("background-color: rgba(239, 240, 239, 1);");
+    ListWidget->setItemWidget(aItem,line);
+
     for (int i = 0; i < sourseNum; i++)
     {
         QListWidgetItem *aItem =new QListWidgetItem;
-        aItem->setSizeHint(QSize(50, 40));
+        aItem->setSizeHint(QSize(50, 55));
         ListWidget->addItem(aItem);
         widget[i] = new sourceInformationWidget(ListWidget);
         ListWidget->setItemWidget(aItem,widget[i]);
+
+        QListWidgetItem *aItem1 =new QListWidgetItem;
+        aItem1->setSizeHint(QSize(50, 1));
+        ListWidget->addItem(aItem1);
+        QWidget *line = new QWidget(ListWidget);
+        line->setStyleSheet("background-color: rgba(239, 240, 239, 1);");
+        ListWidget->setItemWidget(aItem1,line);
     }
 }
 
@@ -283,12 +298,13 @@ void sourceManager::fillInTheData(QListWidget *ListWidget,
                                   QStringList addressList,
                                   QStringList typeList)
 {
-    for(int i = 1; i < addressList.count()+1; i++){
-        QListWidgetItem *item = ListWidget->item(i);
+    int j = 1;
+    for(int i = 0; i < addressList.count(); i++){
+        QListWidgetItem *item = ListWidget->item(j);
         sourceInformationWidget* pwig = static_cast<sourceInformationWidget*> (ListWidget->itemWidget(item));
-        pwig->ui->address_Label->setText(addressList.at(i-1));
+        pwig->ui->address_Check->setText(addressList.at(i));
         pwig->ui->spend_Label->setText("等待检测");
-        QString type = typeList.at(i-1);
+        QString type = typeList.at(i);
         if(type.compare("deb") == 0)
         {
             pwig->ui->type_Label->setText("软件源");
@@ -297,17 +313,20 @@ void sourceManager::fillInTheData(QListWidget *ListWidget,
         {
             pwig->ui->type_Label->setText("源码源");
         }
+        j=j+2;
     }
 }
 
 //填充动态数据延时
 void sourceManager::fillInTheDynamicData(QListWidget *ListWidget, int num)
 {
-    for(int i = 1; i < num+1; i++){
-        QListWidgetItem *item = ListWidget->item(i);
+    int j = 1;
+    for(int i = 0; i < num; i++){
+        QListWidgetItem *item = ListWidget->item(j);
         sourceInformationWidget* pwig = static_cast<sourceInformationWidget*> (ListWidget->itemWidget(item));
-        delayRefreshThread *thread = new delayRefreshThread(pwig->ui->spend_Label, pwig->ui->delay_Label, pwig->ui->address_Label->text());
+        delayRefreshThread *thread = new delayRefreshThread(pwig->ui->spend_Label, pwig->ui->delay_Label, pwig->ui->address_Check->text());
         thread->start();
+        j=j+2;
     }
 }
 
@@ -317,14 +336,14 @@ void sourceManager::refreshBtnClicked()
     Nettestflag = true;
     qDebug()<<Nettestflag;
     qDebug()<<"~~~~~~~~刷新~~~~~~~~~~~~~~~~~:"<<selectWidget->objectName();
-    fillInTheDynamicData(selectWidget, selectWidget->count()-1);
+    fillInTheDynamicData(selectWidget, selectWidget->count()/2-1);
     //激活循序下载测速
-    for(int i = 1; i < selectWidget->count(); i++)
+    for(int i = 1; i < selectWidget->count(); i=i+2)
     {
         sourceInformationWidget* pwig = static_cast<sourceInformationWidget*> (selectWidget->itemWidget(selectWidget->item(i)));
         if(!pwig->ui->delay_Label->text().compare("无法连接") == 0)//跳过无法连接的源
         {
-            sourceinterface->getDownloadSpeedFromSource(pwig->ui->address_Label->text(), selectWidget, i);
+            sourceinterface->getDownloadSpeedFromSource(pwig->ui->address_Check->text(), selectWidget, i);
             break;
         }else{
             pwig->ui->spend_Label->setText("无法连接");
@@ -336,7 +355,7 @@ void sourceManager::refreshBtnClicked()
 void sourceManager::selectDeleteIteam(QListWidgetItem *item)
 {
     sourceInformationWidget* pwig =static_cast<sourceInformationWidget*> (selectWidget->itemWidget(item));
-    if(pwig->ui->address_Label->text().compare("address") == 0)
+    if(pwig->ui->address_Check->text().compare("address") == 0)
     {
         deleteFlag = 0;
         return;
@@ -344,8 +363,8 @@ void sourceManager::selectDeleteIteam(QListWidgetItem *item)
     delete_item = item;
     deleteFlag = 1;
     changeFlag = 1;
-    ui->label_2->setText(pwig->ui->address_Label->text());
-    qDebug() << "address : " << pwig->ui->address_Label->text() ;
+    ui->label_2->setText(pwig->ui->address_Check->text());
+    qDebug() << "address : " << pwig->ui->address_Check->text() ;
 }
 
 //change按钮点击回调
@@ -370,8 +389,8 @@ void sourceManager::changeBtnClicked()
 
     addSource *addSourcewidget = new addSource();
 
-    QStringList Address = pwig->ui->address_Label->text().split(" ");
-    sourceChange << QVariant::fromValue(pwig->ui->address_Label->text());//原数据
+    QStringList Address = pwig->ui->address_Check->text().split(" ");
+    sourceChange << QVariant::fromValue(pwig->ui->address_Check->text());//原数据
     addSourcewidget->ui->addBtn->setText("更改");
     QString type = Address.at(0);//类型
     if(type.compare("deb") == 0){
@@ -463,12 +482,12 @@ void sourceManager::questionMessage()
             if(!selectWidget->objectName().compare("sources.list"))
             {
                 sourceDelete<< QVariant::fromValue("/etc/apt/"+selectWidget->objectName())
-                            << QVariant::fromValue(pwig->ui->address_Label->text());
+                            << QVariant::fromValue(pwig->ui->address_Check->text());
             }
             else
             {
                 sourceDelete<< QVariant::fromValue("/etc/apt/sources.list.d/"+selectWidget->objectName())
-                            << QVariant::fromValue(pwig->ui->address_Label->text());
+                            << QVariant::fromValue(pwig->ui->address_Check->text());
             }
 
             serviceInterface->asyncCall("deleteSource", sourceDelete);
@@ -529,7 +548,7 @@ void sourceManager::addForListwidget(QListWidget *ListWidget, QString address)
     sourceInformationWidget *widget = new sourceInformationWidget(ListWidget);
     ListWidget->setItemWidget(aItem,widget);
     QStringList Address = address.split(" ");
-    widget->ui->address_Label->setText(address);
+    widget->ui->address_Check->setText(address);
     QString type = Address.at(0);
     if(type.compare("deb") == 0){
         widget->ui->type_Label->setText("软件源");
