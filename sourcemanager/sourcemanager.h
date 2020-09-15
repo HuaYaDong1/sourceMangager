@@ -6,6 +6,8 @@
 #include <QListWidgetItem>
 #include <QMessageBox>
 #include <QPainter>
+#include <QMenu>
+#include "setAlarmRepeatDialog.h"
 
 class sourceInterface;
 class sourceInformationWidget;
@@ -63,6 +65,8 @@ private slots:
     void stopBtnClicked();
     void deleteSourcePageBtnClicked();
     void testingUpdateBtnClicked();
+    void UnnecessarySourcesSelect();
+    void UnnecessarySourcesSelect_listClickslot();
 
 private:
     Ui::sourceManager *ui;
@@ -115,6 +119,8 @@ private:
 
     QLabel *source[1024];
     QStringList SourceLabelList;
+
+    set_alarm_repeat_Dialog *UnnecessarySources = nullptr;
 
 signals:
 

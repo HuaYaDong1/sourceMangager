@@ -40,6 +40,10 @@ sourceManager::sourceManager(QWidget *parent)
     connect(ui->stopBtn, SIGNAL(clicked()), this, SLOT(stopBtnClicked()));
     connect(ui->deleteSourcePageBtn, SIGNAL(clicked()), this, SLOT(deleteSourcePageBtnClicked()));
     connect(ui->testingUpdateBtn, SIGNAL(clicked()), this, SLOT(testingUpdateBtnClicked()));
+    connect(ui->label_10, SIGNAL(clicked()), this, SLOT(UnnecessarySourcesSelect()));
+    connect(ui->label_11, SIGNAL(clicked()), this, SLOT(UnnecessarySourcesSelect()));
+    connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(UnnecessarySourcesSelect()));
+
 
     QDBusConnection::systemBus().registerObject("/citos/client/path",
                                                 this,
@@ -64,12 +68,16 @@ sourceManager::sourceManager(QWidget *parent)
     ui->createSourceBtn->hide();
     ui->deleteSourcePageBtn->hide();
     ui->page_3->hide();
-    ui->comboBox->setFrame(QListWidget::NoFrame);
+    //ui->comboBox->setFrame(QListWidget::NoFrame);
     selectWidget = ui->listWidget;
 
     connect(sourceinterface,SIGNAL(downloadover(QString ,QListWidget *, int )),this,SLOT(downloadOverSlot(QString ,QListWidget *, int )));
     connect(sourceinterface,SIGNAL(downloadspeed(QString ,QListWidget *, int )),this,SLOT(downloadspeed(QString ,QListWidget *, int )));
-    //ui->widget_2->setStyleSheet("");
+
+//    QMenu *menu_app = new QMenu(this);
+//    menu_app->setFixedWidth(440);
+//    ui->pushButton->setMenu(menu_app);
+//    menu_app->addAction("~~~~~~~~~~~~~~~~~~~");
 }
 
 sourceManager::~sourceManager()
@@ -101,7 +109,6 @@ void sourceManager::downloadOverSlot(QString speed,QListWidget *Listwidget, int 
             QString address;
             if(selectWidget == ui->listWidget){
                 address = sourceinterface->getMainSourceAddressList("/etc/apt/mainsources/"+pwig->ui->address_Check->text()+".list").at(0);
-                qDebug()<<address<<"!!!!!!!!!!!!!!!!!!!!!!!!!";
             }else{
                 address = pwig->ui->address_Check->text();
             }
@@ -203,6 +210,9 @@ void sourceManager::searchUnnecessarySourcesNumber()
 {
     SourceList = sourceinterface->getSourceName();
     pageNum = SourceList.count();
+    UnnecessarySources = new  set_alarm_repeat_Dialog(ui->sourceNameWidget_2, pageNum);UnnecessarySources->hide();
+    connect(UnnecessarySources->listWidget,SIGNAL(itemClicked(QListWidgetItem*)),this,SLOT(UnnecessarySourcesSelect_listClickslot()));
+
     UnnecessarySourceName = SourceList.at(0); //第一次副源页切换，当前页名字
     qDebug()<<SourceList;
 
@@ -327,6 +337,8 @@ void sourceManager::initializationList(QListWidget *ListWidget, int sourseNum)
         QWidget *line = new QWidget(ListWidget);
         line->setStyleSheet("background-color: rgba(139, 140, 139, 1);");
         ListWidget->setItemWidget(aItem1,line);
+
+        widget->ui->type_Label->hide();
     }
 }
 
@@ -367,7 +379,7 @@ void sourceManager::fillInMainTheData(QListWidget *ListWidget,
     }
 }
 
-//填充静态数据
+//次源页填充静态数据
 void sourceManager::fillInTheData(QListWidget *ListWidget,
                                   QStringList addressList,
                                   QStringList typeList)
@@ -465,6 +477,52 @@ void sourceManager::selectDeleteIteam(QListWidgetItem *item)
     ui->label_2->setText(pwig->ui->address_Check->text());
     qDebug() << "address : " << pwig->ui->address_Check->text() ;
 }
+
+//次源选择页展示
+void sourceManager::UnnecessarySourcesSelect()
+{
+    QPointF position = this->pos();
+    UnnecessarySources->move(position.x()+29,position.y()+150);
+    UnnecessarySources->listWidget->setFixedSize(300,162);
+    UnnecessarySources->setWindowFlags(Qt::FramelessWindowHint | Qt::Popup);
+    UnnecessarySources->setAttribute(Qt::WA_TranslucentBackground);
+    UnnecessarySources->resize(300,162);
+    UnnecessarySources->listWidget->move(0,0);
+    UnnecessarySources->widget[0]->alarmLabel0->setText(tr("1min"));
+    UnnecessarySources->widget[1]->alarmLabel0->setText(tr("2min"));
+    UnnecessarySources->widget[2]->alarmLabel0->setText(tr("3min"));
+    UnnecessarySources->widget[3]->alarmLabel0->setText(tr("4min"));
+    UnnecessarySources->widget[4]->alarmLabel0->setText(tr("6min"));
+    UnnecessarySources->show();
+}
+
+//次源选择页回调
+void sourceManager::UnnecessarySourcesSelect_listClickslot()
+{
+    int num=UnnecessarySources->listWidget->currentRow();
+    switch (num)
+    {
+    case 0:
+        ui->label_11->setText("1min");
+        break;
+    case 1:
+        ui->label_11->setText("2min");
+        break;
+    case 2:
+        ui->label_11->setText("3min");
+        break;
+    case 3:
+        ui->label_11->setText("4min");
+        break;
+    case 4:
+        ui->label_11->setText("6min");
+        break;
+    default:
+        break;
+    }
+    UnnecessarySources->close();
+}
+
 
 //change按钮点击回调
 void sourceManager::changeBtnClicked()
@@ -642,7 +700,7 @@ void sourceManager::addBtnClicked()
 void sourceManager::addForListwidget(QListWidget *ListWidget, QString address)
 {
     QListWidgetItem *aItem =new QListWidgetItem;
-    aItem->setSizeHint(QSize(50, 40));
+    aItem->setSizeHint(QSize(50, 55));
     ListWidget->addItem(aItem);
     sourceInformationWidget *widget = new sourceInformationWidget(ListWidget);
     ListWidget->setItemWidget(aItem,widget);
@@ -654,8 +712,16 @@ void sourceManager::addForListwidget(QListWidget *ListWidget, QString address)
     }else{
         widget->ui->type_Label->setText("源码源");
     }
-    widget->ui->delay_Label->setText("等待检测");
+
+    widget->ui->type_Label->hide();
     widget->ui->spend_Label->setText("等待检测");
+
+    QListWidgetItem *aItem1 =new QListWidgetItem;
+    aItem1->setSizeHint(QSize(50, 1));
+    ListWidget->addItem(aItem1);
+    QWidget *line = new QWidget(ListWidget);
+    line->setStyleSheet("background-color: rgba(139, 140, 139, 1);");
+    ListWidget->setItemWidget(aItem1,line);
 }
 
 //apt-get update
@@ -750,7 +816,7 @@ void sourceManager::createSourceBtnClicked()
         }
         sourceFileName<< QVariant::fromValue("/etc/apt/sources.list.d/"+name);
         serviceInterface->asyncCall("addExtensionSource", sourceFileName);
-        initializationList(WidgetList,+1);//初始化列表框
+        initializationList(WidgetList,0);//初始化列表框
         pageNum++;
     }
 }
@@ -784,7 +850,7 @@ void sourceManager::deleteSourcePageBtnClicked()
     if(reply == QMessageBox::Yes){
         serviceInterface->asyncCall("deleteSourceFile", sourceFileName);
         ui->updateLabel->setText("删除源");
-        //删除 页与 按钮
+        //删除 页与 按钮 与线
         delete selectBtn;
         //seletcPage->hide();
         delete seletcPage;

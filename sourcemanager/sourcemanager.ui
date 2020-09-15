@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1198</width>
-    <height>626</height>
+    <width>1157</width>
+    <height>622</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,7 +20,7 @@
    <item row="1" column="0">
     <widget class="QStackedWidget" name="stackedWidget_2">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="mainPage">
       <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -143,44 +143,79 @@
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <item>
-           <widget class="QComboBox" name="comboBox">
+           <widget class="QFrame" name="frame">
             <property name="minimumSize">
              <size>
               <width>300</width>
-              <height>0</height>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout">
+             <item>
+              <widget class="ClickableLabel" name="label_11">
+               <property name="text">
+                <string>TextLabel</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="ClickableLabel" name="label_10">
+               <property name="minimumSize">
+                <size>
+                 <width>20</width>
+                 <height>20</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>20</width>
+                 <height>20</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">background-color: rgb(207, 255, 175);</string>
+               </property>
+               <property name="text">
+                <string>v</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton">
+            <property name="minimumSize">
+             <size>
+              <width>300</width>
+              <height>30</height>
              </size>
             </property>
             <property name="focusPolicy">
-             <enum>Qt::StrongFocus</enum>
+             <enum>Qt::ClickFocus</enum>
+            </property>
+            <property name="toolTip">
+             <string/>
             </property>
             <property name="styleSheet">
-             <string notr="true">background-color: rgba(248, 248, 248, 1);</string>
+             <string notr="true"/>
             </property>
-            <item>
-             <property name="text">
-              <string>新建项目</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>新建项目</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>新建项目</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>新建项目</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>新建项目</string>
-             </property>
-            </item>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="createSourceBtn">
+            <property name="text">
+             <string>新建版本</string>
+            </property>
            </widget>
           </item>
           <item>
@@ -298,6 +333,19 @@
        </widget>
       </item>
       <item>
+       <spacer name="horizontalSpacer_6">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
        <widget class="QLabel" name="label_3">
         <property name="text">
          <string>       当前页：</string>
@@ -371,13 +419,6 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="createSourceBtn">
-        <property name="text">
-         <string>新建版本</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QPushButton" name="deleteSourcePageBtn">
         <property name="text">
          <string>删除版本</string>
@@ -444,6 +485,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ClickableLabel</class>
+   <extends>QLabel</extends>
+   <header location="global">clickableLabel.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

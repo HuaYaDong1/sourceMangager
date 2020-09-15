@@ -8,11 +8,11 @@ addSource::addSource(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->add_lineEdit->setPlaceholderText("输入服务器地址");
-    ui->version_lineEdit->setPlaceholderText("自定义版本");
+    ui->version_lineEdit->setPlaceholderText("自定义版本名称");
     ui->suffix_lineEdit->setPlaceholderText("自定义分类目录");
     ui->textEdit->setPlaceholderText("预览");
     ui->textEdit->setFocusPolicy(Qt::NoFocus);
-    ui->textEdit->setEnabled(false);
+    //ui->textEdit->setEnabled(false);
     ui->deb->setChecked(true);
     ui->main->setChecked(true);
     typeStr = "deb";
@@ -22,10 +22,13 @@ addSource::addSource(QWidget *parent) :
     connect(ui->add_lineEdit, SIGNAL(textChanged(const QString &)), this,SLOT(on_add_lineEdit_textChanged(const QString &)));
     connect(ui->version_lineEdit, SIGNAL(textChanged(const QString &)), this,SLOT(on_version_lineEdit_textChanged(const QString &)));
     connect(ui->suffix_lineEdit, SIGNAL(textChanged(const QString &)), this,SLOT(on_suffix_lineEdit_textChanged(const QString &)));
-    connect(ui->textEdit, SIGNAL(textChanged(const QString &)), this,SLOT(on_preview_lineEdit_textChanged(const QString &)));
+//  connect(ui->textEdit, SIGNAL(textChanged(const QString &)), this,SLOT(on_preview_lineEdit_textChanged(const QString &)));
 
-    connect(ui->deb, SIGNAL(stateChanged(int)), this, SLOT(debStateChanged(int)));
-    connect(ui->debsrc, SIGNAL(stateChanged(int)), this, SLOT(debSrcStateChanged(int)));
+    connect(ui->deb, SIGNAL(toggled(bool)), this, SLOT(debStateChanged(bool)));
+    connect(ui->debsrc, SIGNAL(toggled(bool)), this, SLOT(debSrcStateChanged(bool)));
+
+    connect(ui->custom_CheckBox, SIGNAL(stateChanged(int)), this, SLOT(custom_CheckBoxStateChanged(int)));
+    connect(ui->class_CheckBox, SIGNAL(stateChanged(int)), this, SLOT(class_CheckBoxStateChanged(int)));
 
     connect(ui->main, SIGNAL(stateChanged(int)), this, SLOT(branchStrupdate(int)));
     connect(ui->restricted, SIGNAL(stateChanged(int)), this, SLOT(branchStrupdate(int)));
@@ -50,6 +53,8 @@ addSource::addSource(QWidget *parent) :
         ui->comboBox->addItems(versionList1);
     }
     ui->horizontalLayout_5->setSpacing(0);
+    ui->version_lineEdit->hide();
+    ui->suffix_lineEdit->hide();
     ui->textEdit->setStyleSheet("border: none;");
 }
 
@@ -68,14 +73,14 @@ void addSource::on_add_lineEdit_textChanged(const QString &arg1)
 
 void addSource::on_version_lineEdit_textChanged(const QString &arg1)
 {
-    ui->version_lineEdit->setStyleSheet("QLineEdit{border:1px solid gray border-radius:1px}");
+    ui->version_lineEdit->setStyleSheet("QLineEdit{border:1px solid #CFCFCF border-radius:1px}");
     versionStr = arg1;
     setSource();
 }
 
 void addSource::on_suffix_lineEdit_textChanged(const QString &arg1)
 {
-    ui->suffix_lineEdit->setStyleSheet("QLineEdit{border:1px solid gray border-radius:1px}");
+    ui->suffix_lineEdit->setStyleSheet("QLineEdit{border:1px solid #CFCFCF border-radius:1px}");
     suffixStr = arg1;
     ui->comboBox->setCurrentIndex(1);
     setSource();
@@ -86,22 +91,55 @@ void addSource::on_preview_lineEdit_textChanged(const QString &arg1)
     qDebug()<<arg1;
 }
 
-void addSource::debStateChanged(int state)
+void addSource::debStateChanged(bool state)
 {
-    if(state == Qt::Checked){
+    if(state){
         typeStr = "deb";
         ui->debsrc->setChecked(false);
         setSource();
     }
 }
 
-void addSource::debSrcStateChanged(int state)
+void addSource::debSrcStateChanged(bool state)
 {
-    if(state == Qt::Checked){
+    if(state){
         typeStr = "deb-src";
         ui->deb->setChecked(false);
         setSource();
     }
+}
+
+void addSource::custom_CheckBoxStateChanged(int state)
+{
+    if(state == Qt::Checked){
+        ui->comboBox->setEnabled(false);
+        ui->version_lineEdit->setFocusPolicy(Qt::StrongFocus);
+        versionStr = "";
+        ui->version_lineEdit->show();
+        ui->label_9->hide();
+        ui->comboBox->setStyleSheet("background-color: rgba(233, 233, 233, 1);");
+    }else{
+        ui->comboBox->setEnabled(true);
+        versionStr = ui->comboBox->currentText();
+        ui->label_9->show();
+        ui->comboBox->setStyleSheet("background-color: rgba(255, 255, 255, 1);");
+        ui->version_lineEdit->hide();
+    }
+    setSource();
+}
+
+void addSource::class_CheckBoxStateChanged(int state)
+{
+    if(state == Qt::Checked){
+        ui->suffix_lineEdit->show();
+        ui->label_10->hide();
+        suffixStr = ui->suffix_lineEdit->text();
+    }else {
+        ui->suffix_lineEdit->hide();
+        ui->label_10->show();
+        suffixStr = "";
+    }
+    setSource();
 }
 
 void addSource::branchStrupdate(int state)
@@ -133,9 +171,9 @@ void addSource::branchStrupdate(int state)
 void addSource::versionBoxSel(const QString &text)
 {
     ui->version_lineEdit->setStyleSheet("QLineEdit{border:1px solid gray border-radius:1px}");
-    if(text.compare("手动编辑") == 0){
+    if(ui->custom_CheckBox->isChecked() == true){
         ui->version_lineEdit->setFocusPolicy(Qt::StrongFocus);
-        versionStr = "";
+        versionStr = ui->suffix_lineEdit->text();
     }else{
         ui->version_lineEdit->setFocusPolicy(Qt::NoFocus);
         versionStr = text;
@@ -189,7 +227,7 @@ void addSource::addBtnClicked()
         }
     }
 
-    if(ui->version_lineEdit->text().isEmpty() && ui->comboBox->currentText().compare("手动编辑")==0){
+    if(ui->version_lineEdit->text().isEmpty() && ui->custom_CheckBox->isChecked() == true){
         QMessageBox::StandardButton reply;
         reply = QMessageBox::warning(this, tr("warning"),  tr("版本不能为空"), QMessageBox::Yes);
         if(reply == QMessageBox::Yes)

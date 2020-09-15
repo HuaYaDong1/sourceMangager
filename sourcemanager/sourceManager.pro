@@ -19,10 +19,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     addsource.cpp \
+    clickableLabel.cpp \
     createsourcewidget.cpp \
     delayrefreshthread.cpp \
     form.cpp \
     main.cpp \
+    setAlarmRepeatDialog.cpp \
     sourceinformationwidget.cpp \
     sourcemanager.cpp\
     sourceinterface.cpp \
@@ -30,9 +32,11 @@ SOURCES += \
 
 HEADERS += \
     addsource.h \
+    clickableLabel.h \
     createsourcewidget.h \
     delayrefreshthread.h \
     form.h \
+    setAlarmRepeatDialog.h \
     sourceinformationwidget.h \
     sourcemanager.h\
     sourceinterface.h \

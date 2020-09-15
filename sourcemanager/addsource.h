@@ -47,8 +47,10 @@ private slots:
     void on_version_lineEdit_textChanged(const QString &arg1);
     void on_suffix_lineEdit_textChanged(const QString &arg1);
     void on_preview_lineEdit_textChanged(const QString &arg1);
-    void debStateChanged(int state);
-    void debSrcStateChanged(int state);
+    void custom_CheckBoxStateChanged(int state);
+    void class_CheckBoxStateChanged(int state);
+    void debStateChanged(bool state);
+    void debSrcStateChanged(bool state);
     void branchStrupdate(int state);
     void versionBoxSel(const QString &text);
     void addBtnClicked();
