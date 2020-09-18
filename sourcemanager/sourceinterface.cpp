@@ -65,6 +65,35 @@ QStringList sourceInterface::getSourceName()
     return sourceNameList;
 }
 
+QStringList sourceInterface::getMainSourceAddressList(QString fileName)
+{
+
+    QStringList sourceList;
+    QFile file(fileName);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
+        qDebug()<<fileName<<"----file open failed!";
+        return sourceList;
+    }
+    QTextStream in(&file);
+    QString line = in.readLine();
+    if((line.left(1).compare("#") !=0) && (line.compare("") !=0)){
+        sourceList<<line;
+    }
+    while(!line.isNull())//字符串有内容
+    {
+        line=in.readLine();//循环读取下行
+        if((line.left(1).compare("#") !=0) && (line.compare("") !=0)){
+            if(line.contains(" "))
+            {
+                //                QStringList list = line.split(" ");
+                sourceList << line;
+            }
+        }
+    }
+    file.close();
+    return sourceList;
+}
+
 QStringList sourceInterface::getSourceAddressList(QString fileName)
 {
 
@@ -93,6 +122,7 @@ QStringList sourceInterface::getSourceAddressList(QString fileName)
     file.close();
     return sourceList;
 }
+
 QStringList sourceInterface::getSourceTypeList(QString fileName)
 {
     QStringList typeList;

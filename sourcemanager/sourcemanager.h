@@ -43,7 +43,7 @@ public:
     }
 
 private slots:
-    void showMainSource(QListWidget *listWidget, int num);
+    void showMainSource(QListWidget *listWidget);
     void showUnnecessarySource(QListWidget *listWidget, int num);
     void selectDeleteIteam(QListWidgetItem *item);
     void changeBtnClicked();
@@ -70,10 +70,14 @@ private:
     void fillInTheData(QListWidget *ListWidget,
                        QStringList addressList,
                        QStringList typeList);
+    void fillInMainTheData(QListWidget *ListWidget,
+                           QStringList addressList);
     void fillInTheDynamicData(QListWidget *ListWidget, int num);
+    void fillInMainDynamicData(QListWidget *ListWidget, int num);
     void questionMessage();
     void searchSourcesNumber();
     void searchUnnecessarySourcesNumber();
+    void mainSourceSet();
 
     sourceInformationWidget *widget[1024];
 
@@ -105,7 +109,12 @@ private:
     bool Nettestflag;
 
     QWidget *seletcPage;
-    QPushButton *selectBtn ;
+    QPushButton *selectBtn;
+
+    int mains_flag = 0;
+
+    QLabel *source[1024];
+    QStringList SourceLabelList;
 
 signals:
 

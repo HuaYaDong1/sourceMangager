@@ -5,6 +5,7 @@
 #include <QDialog>
 #include <QMessageBox>
 #include <QDir>
+#include <QPainter>
 
 
 namespace Ui {
@@ -20,6 +21,25 @@ public:
     ~addSource();
     Ui::addSource *ui;
     bool isAddBtnClicked;
+
+    void paintEvent(QPaintEvent *event)
+    {
+        QPainter painter(this);
+        painter.setRenderHint(QPainter::Antialiasing);  // 反锯齿;
+                                                        //Antialiasing
+        painter.setBrush(QBrush(QColor(255, 255, 255)));
+        painter.setPen(Qt::transparent);
+        QRect rect = this->rect();
+        rect.setWidth(rect.width() - 0);
+        rect.setHeight(rect.height() - 0);
+        painter.drawRoundedRect(rect, 7, 7);
+        {
+            QPainterPath painterPath;
+            painterPath.addRoundedRect(rect, 7, 7);
+            painter.drawPath(painterPath);
+        }
+        QWidget::paintEvent(event);
+    }
 
 
 private slots:

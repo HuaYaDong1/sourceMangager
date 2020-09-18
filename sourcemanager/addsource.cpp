@@ -10,9 +10,9 @@ addSource::addSource(QWidget *parent) :
     ui->add_lineEdit->setPlaceholderText("输入服务器地址");
     ui->version_lineEdit->setPlaceholderText("自定义版本");
     ui->suffix_lineEdit->setPlaceholderText("自定义分类目录");
-    ui->preview_lineEdit->setPlaceholderText("预览");
-    ui->preview_lineEdit->setFocusPolicy(Qt::NoFocus);
-    ui->preview_lineEdit->setEnabled(false);
+    ui->textEdit->setPlaceholderText("预览");
+    ui->textEdit->setFocusPolicy(Qt::NoFocus);
+    ui->textEdit->setEnabled(false);
     ui->deb->setChecked(true);
     ui->main->setChecked(true);
     typeStr = "deb";
@@ -22,7 +22,7 @@ addSource::addSource(QWidget *parent) :
     connect(ui->add_lineEdit, SIGNAL(textChanged(const QString &)), this,SLOT(on_add_lineEdit_textChanged(const QString &)));
     connect(ui->version_lineEdit, SIGNAL(textChanged(const QString &)), this,SLOT(on_version_lineEdit_textChanged(const QString &)));
     connect(ui->suffix_lineEdit, SIGNAL(textChanged(const QString &)), this,SLOT(on_suffix_lineEdit_textChanged(const QString &)));
-    connect(ui->preview_lineEdit, SIGNAL(textChanged(const QString &)), this,SLOT(on_preview_lineEdit_textChanged(const QString &)));
+    connect(ui->textEdit, SIGNAL(textChanged(const QString &)), this,SLOT(on_preview_lineEdit_textChanged(const QString &)));
 
     connect(ui->deb, SIGNAL(stateChanged(int)), this, SLOT(debStateChanged(int)));
     connect(ui->debsrc, SIGNAL(stateChanged(int)), this, SLOT(debSrcStateChanged(int)));
@@ -49,6 +49,8 @@ addSource::addSource(QWidget *parent) :
         versionList1 <<"v10"<<"v10sp1"<<"2004"<<"2010"<<"手动编辑";
         ui->comboBox->addItems(versionList1);
     }
+    ui->horizontalLayout_5->setSpacing(0);
+    ui->textEdit->setStyleSheet("border: none;");
 }
 
 addSource::~addSource()
@@ -145,7 +147,7 @@ void addSource::versionBoxSel(const QString &text)
 QString addSource::setSource()
 {
     QString source = typeStr+" "+webStr+" "+versionStr+" "+branchStr+" "+suffixStr;
-    ui->preview_lineEdit->setText(source);
+    ui->textEdit->setText(source);
     return source;
 }
 

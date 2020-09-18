@@ -31,6 +31,7 @@ public:
     QStringList getSourceName();
     QStringList getMainSourceName();
     QStringList getSourceAddressList(QString fileName);
+    QStringList getMainSourceAddressList(QString fileName);
     QString  setPingToWidget(QString sourceName);
     QStringList getSourceTypeList(QString fileName);
     void getDownloadSpeedFromSource(QString sourceName, QListWidget *listwidget, int num);
