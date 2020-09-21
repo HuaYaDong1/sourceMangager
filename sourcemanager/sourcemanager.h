@@ -67,6 +67,8 @@ private:
     void questionMessage();
     void searchUnnecessarySourcesNumber();
     void mainSourceSet();
+    void addMainSource(QString sourceName);
+    void delMainSource(QString sourceName);
 
     sourceInformationWidget *widget[1024];
 

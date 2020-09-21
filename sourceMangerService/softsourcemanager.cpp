@@ -15,7 +15,6 @@ void softSourceManager::addSource(QVariantList sourceInfo)
 
     file.write(QString(sourceName + "\n").toLatin1());
     file.close();
-
 }
 void softSourceManager::deleteSource(QVariantList sourceInfo)
 {
@@ -104,7 +103,6 @@ void softSourceManager::changedSource(QVariantList sourceInfo)
             QString tempStr=strList.at(i);
             tempStr.replace(0,tempStr.length(),destSourceName);   //"Hello!"是要替换的内容
             stream<<tempStr<<'\n';
-
         }
         //如果没有找到要替换的内容，照常写入
         else
@@ -121,7 +119,6 @@ void softSourceManager::changedSource(QVariantList sourceInfo)
     }
     writeFile.close();
 }
-
 
 //arg1 srclist arg2 filename
 void softSourceManager::addExtensionSource(QVariantList sourceInfo)
@@ -160,3 +157,95 @@ void softSourceManager::deleteSourceFile(QVariantList sourceInfo)
     bool sendResult = QDBusConnection::systemBus().send(msg);
     qDebug()<<sendResult;
 }
+//arg1:list file name
+void softSourceManager::addMainSource(QVariantList sourceInfo)
+{
+    QString fileName = sourceInfo.at(0).toString();
+    QString mainPath = "/etc/apt/mainsources/"+fileName;
+    QString strAll;
+    QStringList strList;
+    QFile readFile(mainPath);		//PATH是自定义读取文件的地址
+    if(readFile.open(QIODevice::ReadOnly))
+    {
+        //把文件所有信息读出来
+        QTextStream readStream(&readFile);
+        strAll=readStream.readAll();
+    }
+    readFile.close();
+
+    QString sourcePath = "/etc/apt/sources.list";
+    QFile writeFile(sourcePath);
+    if(writeFile.open(QIODevice::WriteOnly | QIODevice::Append)){
+        //把文件所有信息读出来
+        QTextStream writeStream(&writeFile);
+        writeStream<<strAll;
+    }
+    writeFile.close();
+}
+//arg1:list file name
+void softSourceManager::delMainSource(QVariantList sourceInfo)
+{
+    QString fileName = sourceInfo.at(0).toString();
+    QString mainPath = "/etc/apt/mainsources/"+fileName;
+    QString strAll;
+    QStringList strList;
+    QFile readFile(mainPath);		//PATH是自定义读取文件的地址
+    if(readFile.open(QIODevice::ReadOnly))
+    {
+        //把文件所有信息读出来
+        QTextStream readStream(&readFile);
+        strAll=readStream.readAll();
+    }
+    readFile.close();
+    if(strAll.contains("\n")){
+        strList = strAll.split("\n");
+    }
+        QString sourcePath = "/etc/apt/sources.list";
+    QFile writeReadFile(sourcePath);
+    if(!writeReadFile.open(QIODevice::ReadOnly)){
+        qDebug()<<"open failed!";
+        return ;
+    }
+    QTextStream stream(&writeReadFile);
+    QString str =  stream.readAll();
+    QStringList strlist2;
+    if(str.contains("\n")){
+        strlist2 = str.split("\n");
+    }
+    writeReadFile.close();
+
+
+    QFile writeFile(sourcePath);
+
+    if(!writeFile.open(QIODevice::WriteOnly | QIODevice::Truncate)){
+        qDebug()<<"open failed!";
+        return ;
+    }
+    qDebug()<<strList.count();
+    QTextStream writeStream(&writeFile);
+    for(int i=0;i<strlist2.count();i++){
+//        for(int j=0;j<strList.count();j++){
+            if((strlist2.at(i).compare(strList.at(0))) == 0 && strList.at(0).compare("") != 0)    //"123456789"是要修改的内容
+            {
+                qDebug()<<i<<"----";
+                QString tempStr=strlist2.at(i);
+                tempStr.replace(0,tempStr.length(),"");   //"Hello!"是要替换的内容
+                writeStream<<tempStr;
+            }
+            //如果没有找到要替换的内容，照常写入
+            else
+            {
+                if(i==strlist2.count()-1)
+                {
+                    writeStream<<strlist2.at(i);
+                }
+                else
+                {
+                    writeStream<<strlist2.at(i)<<'\n';
+                }
+            }
+//        }
+    }
+    writeFile.close();
+}
+

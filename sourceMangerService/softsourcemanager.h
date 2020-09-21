@@ -24,6 +24,8 @@ public slots:
     void addExtensionSource(QVariantList sourceInfo);
     void deleteSourceFile(QVariantList sourceInfo);
 
+    void addMainSource(QVariantList sourceInfo);
+    void delMainSource(QVariantList sourceInfo);
 
 signals:
     void updateOver(QString arg);

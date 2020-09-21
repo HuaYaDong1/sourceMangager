@@ -269,6 +269,7 @@ void sourceManager::initializationList(QListWidget *ListWidget, int sourseNum)
                 if(state == Qt::Checked){
                     SourceLabelList << widget->ui->address_Check->text();
                     mainSourceSet();
+                    addMainSource(widget->ui->address_Check->text());
                 }else{
                     for(int j = 0; j < SourceLabelList.count(); j++)
                     {
@@ -277,6 +278,7 @@ void sourceManager::initializationList(QListWidget *ListWidget, int sourseNum)
                         }
                     }
                     mainSourceSet();
+                    delMainSource(widget->ui->address_Check->text());
                 }
             });
         }else{
@@ -298,6 +300,37 @@ void sourceManager::initializationList(QListWidget *ListWidget, int sourseNum)
     }
 }
 
+void sourceManager::addMainSource(QString sourceName)
+{
+    QVariantList sourceFileName;
+    sourceFileName << QVariant::fromValue(sourceName);
+    QDBusInterface *serviceInterface = new QDBusInterface("com.softSource.manager",
+                                                          "/com/softSource/Manager",
+                                                          "com.softSource.manager.interface",
+                                                          QDBusConnection::systemBus());
+    if(!serviceInterface->isValid())
+    {
+        qDebug() << "Service Interface: " << qPrintable(QDBusConnection::systemBus().lastError().message());
+        return;
+    }
+
+    serviceInterface->asyncCall("addMainSource",sourceFileName);
+}
+void sourceManager::delMainSource(QString sourceName)
+{
+    QVariantList sourceFileName;
+    sourceFileName << QVariant::fromValue(sourceName);
+    QDBusInterface *serviceInterface = new QDBusInterface("com.softSource.manager",
+                                                          "/com/softSource/Manager",
+                                                          "com.softSource.manager.interface",
+                                                          QDBusConnection::systemBus());
+    if(!serviceInterface->isValid())
+    {
+        qDebug() << "Service Interface: " << qPrintable(QDBusConnection::systemBus().lastError().message());
+        return;
+    }
+    serviceInterface->asyncCall("delMainSource",sourceFileName);
+}
 //在设置主源 添加 或 删除源名字label
 void sourceManager::mainSourceSet()
 {

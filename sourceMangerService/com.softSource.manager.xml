@@ -1,9 +1,6 @@
 <!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN" "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node>
   <interface name="com.softSource.manager.interface">
-    <signal name="updateOver">
-      <arg name="arg" type="s" direction="out"/>
-    </signal>
     <method name="addSource">
       <arg name="sourceInfo" type="av" direction="in"/>
     </method>
@@ -22,6 +19,12 @@
       <arg name="sourceInfo" type="av" direction="in"/>
     </method>
     <method name="deleteSourceFile">
+      <arg name="sourceInfo" type="av" direction="in"/>
+    </method>
+    <method name="addMainSource">
+      <arg name="sourceInfo" type="av" direction="in"/>
+    </method>
+    <method name="delMainSource">
       <arg name="sourceInfo" type="av" direction="in"/>
     </method>
   </interface>
