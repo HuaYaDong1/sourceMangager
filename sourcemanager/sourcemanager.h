@@ -9,6 +9,7 @@
 #include <QMenu>
 #include <QDebug>
 #include "setAlarmRepeatDialog.h"
+#include <QGSettings/qgsettings.h>
 
 class sourceInterface;
 class sourceInformationWidget;
@@ -53,6 +54,7 @@ private slots:
     void UnnecessarySourcesSelect();
     void UnnecessarySourcesSelect_listClickslot();
     void UnnecessarySourcesShow();
+    void style_changed(QString name);
 
 private:
     Ui::sourceManager *ui;
@@ -71,10 +73,12 @@ private:
     void delMainSource(QString sourceName);
 
     sourceInformationWidget *widget[1024];
-
+    QGSettings *style_settings;
     QWidget * page[1024];
     //    QListWidget * WidgetList[1024];
     //    QPushButton *unnecessarySourceBtn[1024];
+
+    bool IsMainSource = true;
 
     QListWidgetItem *delete_item;
     QListWidget  *selectWidget;

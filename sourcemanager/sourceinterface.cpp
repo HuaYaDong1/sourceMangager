@@ -96,21 +96,24 @@ QStringList sourceInterface::getMainSourceAddressList(QString fileName)
 
 QStringList sourceInterface::getSourceAddressList(QString fileName)
 {
-
+qDebug()<<fileName<<"0000";
     QStringList sourceList;
     QFile file(fileName);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
         qDebug()<<fileName<<"----file open failed!";
         return sourceList;
     }
+    qDebug()<<"1111111111111";
     QTextStream in(&file);
     QString line = in.readLine();
+    qDebug()<<line<<"===========";
     if((line.left(1).compare("#") !=0) && (line.compare("") !=0)){
         sourceList<<line;
     }
     while(!line.isNull())//字符串有内容
     {
         line=in.readLine();//循环读取下行
+        qDebug()<<line;
         if((line.left(1).compare("#") !=0) && (line.compare("") !=0)){
             if(line.contains(" "))
             {

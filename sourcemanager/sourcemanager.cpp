@@ -26,6 +26,21 @@ sourceManager::sourceManager(QWidget *parent)
     changeFlag = 0;
     UnnecessarySageCount = 0;
 
+    style_settings = new QGSettings("org.ukui.style");
+    connect(style_settings,SIGNAL(changed(QString)),this,SLOT(style_changed(QString)));
+
+
+    QPalette paletteBtn = ui->pageMainSourceBtn->palette();
+    ui->pageUnnecessaryBtn->setPalette(paletteBtn);
+    QPalette palette2;
+    QStyleOption opt;
+    palette2.setBrush(QPalette::Button, opt.palette.base().color());
+    palette2.setBrush(QPalette::ButtonText, opt.palette.text().color());
+    ui->pageMainSourceBtn->setPalette(palette2);
+    ui->pageMainSourceBtn->setEnabled(false);
+
+    ui->listWidget->setSelectionMode(QAbstractItemView::NoSelection);
+
     connect(ui->deleteBtn, SIGNAL(clicked()), this, SLOT(deleteBtnClicked()) );
     connect(ui->refreshBtn, SIGNAL(clicked()), this, SLOT(refreshBtnClicked()) );
     connect(ui->refreshBtn_2, SIGNAL(clicked()), this, SLOT(refreshBtnClicked()) );
@@ -86,7 +101,34 @@ sourceManager::~sourceManager()
 {
     delete ui;
 }
-
+void sourceManager::style_changed(QString name)
+{
+    Q_UNUSED(name);
+    if(IsMainSource){
+        QPalette palette;
+        QStyleOption opt;
+        palette.setBrush(QPalette::Button, opt.palette.button().color());
+        palette.setBrush(QPalette::ButtonText, opt.palette.buttonText().color());
+        ui->pageUnnecessaryBtn->setPalette(palette);
+        QPalette palette2;
+        QStyleOption opt2;
+        palette2.setBrush(QPalette::Button, opt2.palette.base().color());
+        palette2.setBrush(QPalette::ButtonText, opt2.palette.text().color());
+        ui->pageMainSourceBtn->setPalette(palette2);
+    }
+    else{
+        QPalette palette;
+        QStyleOption opt;
+        palette.setBrush(QPalette::Button, opt.palette.button().color());
+        palette.setBrush(QPalette::ButtonText, opt.palette.buttonText().color());
+        ui->pageMainSourceBtn->setPalette(palette);
+        QPalette palette2;
+        QStyleOption opt2;
+        palette2.setBrush(QPalette::Button, opt2.palette.base().color());
+        palette2.setBrush(QPalette::ButtonText, opt2.palette.text().color());
+        ui->pageUnnecessaryBtn->setPalette(palette2);
+    }
+}
 void sourceManager::downloadOverSlot(QString speed,QListWidget *Listwidget, int Num)
 {
     if(!Nettestflag)
@@ -141,6 +183,19 @@ void sourceManager::downloadspeed(QString speed,QListWidget *Listwidget, int Num
 //主源页切换
 void sourceManager::pageMainSourceBtnClicked()
 {
+
+    ui->pageMainSourceBtn->setEnabled(false);
+    ui->pageUnnecessaryBtn->setEnabled(true);
+
+    QPalette paletteBtn = ui->pageMainSourceBtn->palette();
+    ui->pageUnnecessaryBtn->setPalette(paletteBtn);
+    QPalette palette;
+    QStyleOption opt;
+    palette.setBrush(QPalette::Button, opt.palette.base().color());
+    palette.setBrush(QPalette::ButtonText, opt.palette.text().color());
+    ui->pageMainSourceBtn->setPalette(palette);
+    IsMainSource = true;
+
     ui->stackedWidget_2->setCurrentIndex(0);
     selectWidget = ui->listWidget;
     ui->updateLabel->setText("");
@@ -152,6 +207,18 @@ void sourceManager::pageMainSourceBtnClicked()
 //次源页切换
 void sourceManager::pageUnnecessaryBtnClicked()
 {
+    ui->pageUnnecessaryBtn->setEnabled(false);
+    ui->pageMainSourceBtn->setEnabled(true);
+
+    QPalette paletteBtn = ui->pageUnnecessaryBtn->palette();
+    ui->pageMainSourceBtn->setPalette(paletteBtn);
+    QPalette palette;
+    QStyleOption opt;
+    palette.setBrush(QPalette::Button, opt.palette.base().color());
+    palette.setBrush(QPalette::ButtonText, opt.palette.text().color());
+    ui->pageUnnecessaryBtn->setPalette(palette);
+    IsMainSource = false;
+
     ui->stackedWidget_2->setCurrentIndex(1);
     ui->stackedWidget_3->setCurrentIndex(UnnecessarySageCount+1);
     selectWidget = UnnecessaryWidget;
@@ -190,6 +257,7 @@ void sourceManager::searchUnnecessarySourcesNumber()
         WidgetList[i]->setObjectName(SourceList.at(i));
         ui->verticalLayout_3->addWidget(WidgetList[i]);
         verticalLayout->addWidget(WidgetList[i]);
+        WidgetList[i]->setSelectionMode(QAbstractItemView::NoSelection);
         WidgetSelect[i] = WidgetList[i];
         connect(unnecessarySourceBtn[i], &QPushButton::clicked, this, [=]()
         {
@@ -285,8 +353,11 @@ void sourceManager::initializationList(QListWidget *ListWidget, int sourseNum)
             connect(widget->ui->address_Check, &QCheckBox::stateChanged, this, [=](int state)
             {
                 if(state == Qt::Checked){
-
+                    deleteFlag = 1;
+                    changeFlag = 1;
                 }
+                else
+                    deleteFlag = 0;
             });
         }
         QListWidgetItem *aItem1 =new QListWidgetItem;
@@ -466,7 +537,17 @@ void sourceManager::selectDeleteIteam(QListWidgetItem *item)
     delete_item = item;
     deleteFlag = 1;
     changeFlag = 1;
-    qDebug() << "address : " << pwig->ui->address_Check->text() ;
+    qDebug() << "address : " << pwig->ui->address_Check->text();
+    if(pwig->ui->address_Check->isChecked()){
+        pwig->ui->address_Check->setChecked(false);
+        changeFlag = 0;
+        deleteFlag = 0;
+    }
+    else{
+        pwig->ui->address_Check->setChecked(true);
+        changeFlag = 1;
+        deleteFlag = 1;
+    }
 }
 
 //次源选择页展示
@@ -540,12 +621,15 @@ void sourceManager::UnnecessarySourcesSelect_listClickslot()
 //change按钮点击回调
 void sourceManager::changeBtnClicked()
 {
+    qDebug()<<"-----------";
     int number;
     if(!changeFlag)
     {
+        qDebug()<<"2222";
         return;
     }
     sourceInformationWidget* pwig =static_cast<sourceInformationWidget*> (selectWidget->itemWidget(delete_item));
+    qDebug()<<"------2-----";
     QDBusInterface *serviceInterface = new QDBusInterface("com.softSource.manager",
                                                           "/com/softSource/Manager",
                                                           "com.softSource.manager.interface",
@@ -555,11 +639,15 @@ void sourceManager::changeBtnClicked()
         qDebug() << "Service Interface: " << qPrintable(QDBusConnection::systemBus().lastError().message());
         return;
     }
+    qDebug()<<"2222";
     QVariantList sourceChange;
 
     addSource *addSourcewidget = new addSource();
+    qDebug()<<"222233";
 
+    qDebug()<<"-------3--555--"<<pwig->ui->address_Check->text()<<"-------";
     QStringList Address = pwig->ui->address_Check->text().split(" ");
+    qDebug()<<"--------4---";
     sourceChange << QVariant::fromValue(pwig->ui->address_Check->text());//原数据
     addSourcewidget->ui->addBtn->setText("更改");
     QString type = Address.at(0);//类型
@@ -570,7 +658,7 @@ void sourceManager::changeBtnClicked()
         addSourcewidget->ui->deb->setChecked(false);
         addSourcewidget->ui->debsrc->setChecked(true);
     }
-
+qDebug()<<"------5-----";
     for(int i=1; i<Address.count(); i++)//网址
     {
         QRegExp rx("(https?|ftp|file)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]");//正则表达式判断网址格式是否正确
@@ -583,6 +671,7 @@ void sourceManager::changeBtnClicked()
             number = i+1;
         }
     }
+    qDebug()<<"--------6---";
     addSourcewidget->ui->version_lineEdit->setText(Address.at(number));//版本
     for(int i=number+1; i<Address.count(); i++)//分类目录
     {
@@ -599,7 +688,7 @@ void sourceManager::changeBtnClicked()
             addSourcewidget->ui->suffix_lineEdit->setText(branch+" ");
         }
     }
-
+qDebug()<<"-------7----";
     addSourcewidget->exec();
     if(!addSourcewidget->isAddBtnClicked)
     {
@@ -610,7 +699,7 @@ void sourceManager::changeBtnClicked()
     sourceChange << QVariant::fromValue("/etc/apt/sources.list.d/"+selectWidget->objectName());//文件
     serviceInterface->asyncCall("changedSource", sourceChange);
     delete delete_item;
-
+qDebug()<<"------8-----";
     addForListwidget(selectWidget, addSourcewidget->ui->textEdit->toPlainText());
     changeFlag = 0;
 }
@@ -626,39 +715,59 @@ void sourceManager::questionMessage()
 {
     if(deleteFlag)
     {
-        sourceInformationWidget* pwig =static_cast<sourceInformationWidget*> (selectWidget->itemWidget(delete_item));
         QMessageBox::StandardButton reply;
         reply = QMessageBox::question(this, tr("question"),
                                       tr("delete ?"),
                                       QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-
-        QDBusInterface *serviceInterface = new QDBusInterface("com.softSource.manager",
-                                                              "/com/softSource/Manager",
-                                                              "com.softSource.manager.interface",
-                                                              QDBusConnection::systemBus());
-        if(!serviceInterface->isValid())
-        {
-            qDebug() << "Service Interface: " << qPrintable(QDBusConnection::systemBus().lastError().message());
-            return;
-        }
-        QVariantList sourceDelete;
         if(reply == QMessageBox::Yes){
-            qDebug()<<"~~~~~~"<<selectWidget->objectName();
-            if(!selectWidget->objectName().compare("sources.list"))
+            QDBusInterface *serviceInterface = new QDBusInterface("com.softSource.manager",
+                                                                  "/com/softSource/Manager",
+                                                                  "com.softSource.manager.interface",
+                                                                  QDBusConnection::systemBus());
+            if(!serviceInterface->isValid())
             {
-                sourceDelete<< QVariant::fromValue("/etc/apt/"+selectWidget->objectName())
-                            << QVariant::fromValue(pwig->ui->address_Check->text());
+                qDebug() << "Service Interface: " << qPrintable(QDBusConnection::systemBus().lastError().message());
+                return;
             }
-            else
-            {
-                sourceDelete<< QVariant::fromValue("/etc/apt/sources.list.d/"+selectWidget->objectName())
-                            << QVariant::fromValue(pwig->ui->address_Check->text());
+            for(int i=1;i<selectWidget->count();i=i+2){
+                sourceInformationWidget* pwig = static_cast<sourceInformationWidget*> (selectWidget->itemWidget(selectWidget->item(i)));
+                if(pwig->ui->address_Check->isChecked()){
+                    QVariantList sourceDelete;
+                    if(!selectWidget->objectName().compare("sources.list"))
+                    {
+                        sourceDelete<< QVariant::fromValue("/etc/apt/"+selectWidget->objectName())
+                                    << QVariant::fromValue(pwig->ui->address_Check->text());
+                    }
+                    else
+                    {
+                        sourceDelete<< QVariant::fromValue("/etc/apt/sources.list.d/"+selectWidget->objectName())
+                                    << QVariant::fromValue(pwig->ui->address_Check->text());
+                    }
+                    serviceInterface->asyncCall("deleteSource", sourceDelete);
+                }
             }
-            serviceInterface->asyncCall("deleteSource", sourceDelete);
-            delete delete_item;
             deleteFlag = 0;
-        }else if (reply == QMessageBox::No){
-        }else{}
+
+            usleep(200000);
+
+            //------------------
+            int all = selectWidget->count();
+            for(int i=0;i<all;i++){
+                delete selectWidget->takeItem(0);
+            }
+            qDebug()<<"~~"<<selectWidget->count();
+            QStringList adddresslist = sourceinterface->getSourceAddressList("/etc/apt/sources.list.d/"+selectWidget->objectName());
+            QStringList typeList= sourceinterface->getSourceTypeList("/etc/apt/sources.list.d/"+selectWidget->objectName());
+            qDebug()<<adddresslist<<typeList;
+
+            initializationList(selectWidget,adddresslist.count());//初始化列表框
+            fillInTheData(selectWidget, adddresslist, typeList); //填充地址，类型，数据
+            fillInTheDynamicData(selectWidget, adddresslist.count());
+            //-----------------
+        }
+        else if (reply == QMessageBox::No){
+        }
+        else{}
     }
 }
 
@@ -719,7 +828,16 @@ void sourceManager::addForListwidget(QListWidget *ListWidget, QString address)
     }else{
         widget->ui->type_Label->setText("源码源");
     }
-
+    connect(widget->ui->address_Check, &QCheckBox::stateChanged, this, [=](int state)
+    {
+        if(state == Qt::Checked){
+            deleteFlag = 1;
+            changeFlag = 1;
+        }
+        else
+            deleteFlag = 0;
+        changeFlag = 0;
+    });
     widget->ui->type_Label->hide();
     widget->ui->spend_Label->setText("等待检测");
 
@@ -981,3 +1099,5 @@ void sourceManager::paintEvent(QPaintEvent *event)
     }
     QWidget::paintEvent(event);
 }
+
+
