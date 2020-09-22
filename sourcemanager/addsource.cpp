@@ -12,29 +12,24 @@ addSource::addSource(QWidget *parent) :
     ui->suffix_lineEdit->setPlaceholderText("自定义分类目录");
     ui->textEdit->setPlaceholderText("预览");
     ui->textEdit->setFocusPolicy(Qt::NoFocus);
-    //ui->textEdit->setEnabled(false);
     ui->deb->setChecked(true);
     ui->main->setChecked(true);
     typeStr = "deb";
     branchStr = "main";
     isAddBtnClicked = false;
     versionStr = "v10";
+
     connect(ui->add_lineEdit, SIGNAL(textChanged(const QString &)), this,SLOT(on_add_lineEdit_textChanged(const QString &)));
     connect(ui->version_lineEdit, SIGNAL(textChanged(const QString &)), this,SLOT(on_version_lineEdit_textChanged(const QString &)));
     connect(ui->suffix_lineEdit, SIGNAL(textChanged(const QString &)), this,SLOT(on_suffix_lineEdit_textChanged(const QString &)));
-//  connect(ui->textEdit, SIGNAL(textChanged(const QString &)), this,SLOT(on_preview_lineEdit_textChanged(const QString &)));
-
     connect(ui->deb, SIGNAL(toggled(bool)), this, SLOT(debStateChanged(bool)));
     connect(ui->debsrc, SIGNAL(toggled(bool)), this, SLOT(debSrcStateChanged(bool)));
-
     connect(ui->custom_CheckBox, SIGNAL(stateChanged(int)), this, SLOT(custom_CheckBoxStateChanged(int)));
     connect(ui->class_CheckBox, SIGNAL(stateChanged(int)), this, SLOT(class_CheckBoxStateChanged(int)));
-
     connect(ui->main, SIGNAL(stateChanged(int)), this, SLOT(branchStrupdate(int)));
     connect(ui->restricted, SIGNAL(stateChanged(int)), this, SLOT(branchStrupdate(int)));
     connect(ui->universe, SIGNAL(stateChanged(int)), this, SLOT(branchStrupdate(int)));
     connect(ui->multiverse, SIGNAL(stateChanged(int)), this, SLOT(branchStrupdate(int)));
-
     connect(ui->comboBox, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(versionBoxSel(const QString &)));
     connect(ui->addBtn, SIGNAL(clicked()), this, SLOT(addBtnClicked()) );
     connect(ui->cancelBtn, SIGNAL(clicked()), this, SLOT(cancelBtnClicked()) );
@@ -56,6 +51,15 @@ addSource::addSource(QWidget *parent) :
     ui->version_lineEdit->hide();
     ui->suffix_lineEdit->hide();
     ui->textEdit->setStyleSheet("border: none;");
+    ui->add_lineEdit->setText("http://");
+
+
+    QPalette palette = ui->comboBox->palette();
+    QColor ColorPlaceholderText(255,255,255,0);
+    QBrush brush;
+    brush.setColor(ColorPlaceholderText);
+    palette.setBrush(QPalette::Button, brush);
+    ui->comboBox->setPalette(palette);
 }
 
 addSource::~addSource()
@@ -86,11 +90,6 @@ void addSource::on_suffix_lineEdit_textChanged(const QString &arg1)
     setSource();
 }
 
-void addSource::on_preview_lineEdit_textChanged(const QString &arg1)
-{
-    qDebug()<<arg1;
-}
-
 void addSource::debStateChanged(bool state)
 {
     if(state){
@@ -116,14 +115,24 @@ void addSource::custom_CheckBoxStateChanged(int state)
         ui->version_lineEdit->setFocusPolicy(Qt::StrongFocus);
         versionStr = "";
         ui->version_lineEdit->show();
-        ui->label_9->hide();
-        ui->comboBox->setStyleSheet("background-color: rgba(233, 233, 233, 1);");
+        //        ui->comboBox->setStyleSheet("background-color: rgba(233, 233, 233, 1);");
+        //        QPalette palette = ui->comboBox->palette();
+        //        QColor ColorPlaceholderText(213, 213, 213,1);
+        //        QBrush brush;
+        //        brush.setColor(ColorPlaceholderText);
+        //        palette.setBrush(QPalette::Button, brush);
+        //        ui->comboBox->setPalette(palette);
     }else{
         ui->comboBox->setEnabled(true);
         versionStr = ui->comboBox->currentText();
-        ui->label_9->show();
-        ui->comboBox->setStyleSheet("background-color: rgba(255, 255, 255, 1);");
         ui->version_lineEdit->hide();
+        //        ui->comboBox->setStyleSheet("background-color: rgba(255, 255, 255, 1);");
+        //        QPalette palette = ui->comboBox->palette();
+        //        QColor ColorPlaceholderText(255,255,255,1);
+        //        QBrush brush;
+        //        brush.setColor(ColorPlaceholderText);
+        //        palette.setBrush(QPalette::Button, brush);
+        //        ui->comboBox->setPalette(palette);
     }
     setSource();
 }
@@ -132,11 +141,9 @@ void addSource::class_CheckBoxStateChanged(int state)
 {
     if(state == Qt::Checked){
         ui->suffix_lineEdit->show();
-        ui->label_10->hide();
         suffixStr = ui->suffix_lineEdit->text();
     }else {
         ui->suffix_lineEdit->hide();
-        ui->label_10->show();
         suffixStr = "";
     }
     setSource();
@@ -270,3 +277,28 @@ QStringList addSource::getVersionList(QString fileName)
     file.close();
     return sourceList;
 }
+
+void addSource::paintEvent(QPaintEvent *event)
+{
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);
+    //painter.setBrush(QBrush(QColor(255, 255, 255)));
+    QStyleOption opt;
+    opt.init(this);
+    painter.setBrush(opt.palette.color(QPalette::Base));
+
+    painter.setPen(Qt::transparent);
+    QRect rect = this->rect();
+    rect.setWidth(rect.width() - 0);
+    rect.setHeight(rect.height() - 0);
+    painter.drawRoundedRect(rect, 7, 7);
+    {
+        QPainterPath painterPath;
+        painterPath.addRoundedRect(rect, 7, 7);
+        painter.drawPath(painterPath);
+    }
+    QWidget::paintEvent(event);
+}
+
+
+

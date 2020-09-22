@@ -22,8 +22,9 @@ SOURCES += \
     clickableLabel.cpp \
     createsourcewidget.cpp \
     delayrefreshthread.cpp \
-    form.cpp \
     main.cpp \
+    selectform.cpp \
+    seleteframe.cpp \
     setAlarmRepeatDialog.cpp \
     sourceinformationwidget.cpp \
     sourcemanager.cpp\
@@ -35,7 +36,8 @@ HEADERS += \
     clickableLabel.h \
     createsourcewidget.h \
     delayrefreshthread.h \
-    form.h \
+    selectform.h \
+    seleteframe.h \
     setAlarmRepeatDialog.h \
     sourceinformationwidget.h \
     sourcemanager.h\
@@ -45,7 +47,8 @@ HEADERS += \
 FORMS += \
     addsource.ui \
     createsourcewidget.ui \
-    form.ui \
+    selectform.ui \
+    seleteframe.ui \
     sourceinformationwidget.ui \
     sourcemanager.ui
 

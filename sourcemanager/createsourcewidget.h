@@ -3,6 +3,8 @@
 
 #include <QDialog>
 #include <QPainter>
+#include <QDebug>
+#include <QStyleOption>
 
 namespace Ui {
 class createSourceWidget;
@@ -21,9 +23,18 @@ public:
     void paintEvent(QPaintEvent *event)
     {
         QPainter painter(this);
-        painter.setRenderHint(QPainter::Antialiasing);  // 反锯齿;
-                                                        //Antialiasing
+        painter.setRenderHint(QPainter::Antialiasing);
         painter.setBrush(QBrush(QColor(255, 255, 255)));
+
+        QStyleOption opt;
+        opt.init(this);
+        painter.setBrush(opt.palette.color(QPalette::Base));
+
+        if(QColor(255,255,255) == opt.palette.color(QPalette::Base) )
+        {
+        }
+        qDebug()<<opt.palette.color(QPalette::Base);
+
         painter.setPen(Qt::transparent);
         QRect rect = this->rect();
         rect.setWidth(rect.width() - 0);

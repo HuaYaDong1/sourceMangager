@@ -6,6 +6,8 @@
 #include <QMessageBox>
 #include <QDir>
 #include <QPainter>
+#include <QStyleOption>
+#include <QDebug>
 
 
 namespace Ui {
@@ -22,31 +24,14 @@ public:
     Ui::addSource *ui;
     bool isAddBtnClicked;
 
-    void paintEvent(QPaintEvent *event)
-    {
-        QPainter painter(this);
-        painter.setRenderHint(QPainter::Antialiasing);  // 反锯齿;
-                                                        //Antialiasing
-        painter.setBrush(QBrush(QColor(255, 255, 255)));
-        painter.setPen(Qt::transparent);
-        QRect rect = this->rect();
-        rect.setWidth(rect.width() - 0);
-        rect.setHeight(rect.height() - 0);
-        painter.drawRoundedRect(rect, 7, 7);
-        {
-            QPainterPath painterPath;
-            painterPath.addRoundedRect(rect, 7, 7);
-            painter.drawPath(painterPath);
-        }
-        QWidget::paintEvent(event);
-    }
+    void paintEvent(QPaintEvent *event);
+
 
 
 private slots:
     void on_add_lineEdit_textChanged(const QString &arg1);
     void on_version_lineEdit_textChanged(const QString &arg1);
     void on_suffix_lineEdit_textChanged(const QString &arg1);
-    void on_preview_lineEdit_textChanged(const QString &arg1);
     void custom_CheckBoxStateChanged(int state);
     void class_CheckBoxStateChanged(int state);
     void debStateChanged(bool state);

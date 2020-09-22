@@ -11,7 +11,7 @@ createSourceWidget::createSourceWidget(QWidget *parent) :
     connect(ui->cancelBtn, SIGNAL(clicked()), this, SLOT(cancelBtnClicked()));
     connect(ui->nameLineEdit, SIGNAL(textChanged(const QString &)), this,SLOT(nameLineEdit_textChanged(const QString &)));
     isTrueBtnClicked = false;
-    ui->nameLineEdit->setPlaceholderText("请输入版本号");
+    ui->nameLineEdit->setPlaceholderText("请输入版本号 后缀为.list");
 }
 
 createSourceWidget::~createSourceWidget()

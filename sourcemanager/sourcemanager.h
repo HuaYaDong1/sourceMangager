@@ -7,6 +7,7 @@
 #include <QMessageBox>
 #include <QPainter>
 #include <QMenu>
+#include <QDebug>
 #include "setAlarmRepeatDialog.h"
 
 class sourceInterface;
@@ -19,30 +20,14 @@ QT_END_NAMESPACE
 class sourceManager : public QWidget
 {
     Q_OBJECT
-        Q_CLASSINFO("D-Bus Interface", "com.client.test")
+    Q_CLASSINFO("D-Bus Interface", "com.client.test")
 
 public:
     sourceManager(QWidget *parent = nullptr);
     ~sourceManager();
 
-    void paintEvent(QPaintEvent *event)
-    {
-        QPainter painter(this);
-        painter.setRenderHint(QPainter::Antialiasing);  // 反锯齿;
-                                                        //Antialiasing
-        painter.setBrush(QBrush(QColor(255, 255, 255)));
-        painter.setPen(Qt::transparent);
-        QRect rect = this->rect();
-        rect.setWidth(rect.width() - 0);
-        rect.setHeight(rect.height() - 0);
-        painter.drawRoundedRect(rect, 7, 7);
-        {
-            QPainterPath painterPath;
-            painterPath.addRoundedRect(rect, 7, 7);
-            painter.drawPath(painterPath);
-        }
-        QWidget::paintEvent(event);
-    }
+    void paintEvent(QPaintEvent *event);
+
 
 private slots:
     void showMainSource(QListWidget *listWidget);
@@ -67,6 +52,7 @@ private slots:
     void testingUpdateBtnClicked();
     void UnnecessarySourcesSelect();
     void UnnecessarySourcesSelect_listClickslot();
+    void UnnecessarySourcesShow();
 
 private:
     Ui::sourceManager *ui;
@@ -85,9 +71,9 @@ private:
 
     sourceInformationWidget *widget[1024];
 
-//    QWidget * page[1024];
-//    QListWidget * WidgetList[1024];
-//    QPushButton *unnecessarySourceBtn[1024];
+    QWidget * page[1024];
+    //    QListWidget * WidgetList[1024];
+    //    QPushButton *unnecessarySourceBtn[1024];
 
     QListWidgetItem *delete_item;
     QListWidget  *selectWidget;
@@ -121,6 +107,8 @@ private:
     QStringList SourceLabelList;
 
     set_alarm_repeat_Dialog *UnnecessarySources = nullptr;
+
+    QListWidget * WidgetSelect[1024];
 
 signals:
 
