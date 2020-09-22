@@ -44,7 +44,7 @@ addSource::addSource(QWidget *parent) :
         qDebug()<<versionList;
     }else {
         QStringList versionList1;
-        versionList1 <<"v10"<<"v10sp1"<<"2004"<<"2010"<<"手动编辑";
+        versionList1 <<"v10"<<"v10sp1"<<"2004"<<"2010";
         ui->comboBox->addItems(versionList1);
     }
     ui->horizontalLayout_5->setSpacing(0);
@@ -54,12 +54,12 @@ addSource::addSource(QWidget *parent) :
     ui->add_lineEdit->setText("http://");
 
 
-    QPalette palette = ui->comboBox->palette();
-    QColor ColorPlaceholderText(255,255,255,0);
-    QBrush brush;
-    brush.setColor(ColorPlaceholderText);
-    palette.setBrush(QPalette::Button, brush);
-    ui->comboBox->setPalette(palette);
+//    QPalette palette = ui->comboBox->palette();
+//    QColor ColorPlaceholderText(255,255,255,0);
+//    QBrush brush;
+//    brush.setColor(ColorPlaceholderText);
+//    palette.setBrush(QPalette::Button, brush);
+//    ui->comboBox->setPalette(palette);
 }
 
 addSource::~addSource()

@@ -63,20 +63,6 @@
        </spacer>
       </item>
       <item>
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>       当前页：</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>source.list</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QPushButton" name="setSourceBtn">
         <property name="text">
          <string>设置为主源</string>
@@ -131,28 +117,7 @@
          </size>
         </property>
         <property name="text">
-         <string>change</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="deleteSourcePageBtn">
-        <property name="text">
-         <string>删除版本</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="testingUpdateBtn">
-        <property name="text">
-         <string>查看主源是否为最新</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="stopBtn">
-        <property name="text">
-         <string>停止检测</string>
+         <string>重编辑</string>
         </property>
        </widget>
       </item>
@@ -162,7 +127,7 @@
    <item row="1" column="0">
     <widget class="QStackedWidget" name="stackedWidget_2">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="mainPage">
       <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -178,17 +143,10 @@
           <string notr="true"/>
          </property>
          <layout class="QGridLayout" name="gridLayout_2">
-          <item row="0" column="2">
-           <widget class="QLabel" name="label_6">
+          <item row="0" column="3">
+           <widget class="QLabel" name="label_7">
             <property name="text">
              <string/>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="8">
-           <widget class="QPushButton" name="refreshBtn_2">
-            <property name="text">
-             <string>网络检测</string>
             </property>
            </widget>
           </item>
@@ -206,6 +164,13 @@
             </property>
            </widget>
           </item>
+          <item row="0" column="5">
+           <widget class="QLabel" name="label_9">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
           <item row="0" column="6">
            <spacer name="horizontalSpacer_2">
             <property name="orientation">
@@ -219,17 +184,17 @@
             </property>
            </spacer>
           </item>
-          <item row="0" column="3">
-           <widget class="QLabel" name="label_7">
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
-          </item>
           <item row="0" column="7">
            <widget class="QPushButton" name="updateBtn_2">
             <property name="text">
              <string>更新仓库</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLabel" name="label_6">
+            <property name="text">
+             <string/>
             </property>
            </widget>
           </item>
@@ -240,10 +205,17 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="5">
-           <widget class="QLabel" name="label_9">
+          <item row="0" column="8">
+           <widget class="QPushButton" name="refreshBtn_2">
             <property name="text">
-             <string/>
+             <string>网络检测</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="9">
+           <widget class="QPushButton" name="stopBtn_1">
+            <property name="text">
+             <string>停止检测</string>
             </property>
            </widget>
           </item>
@@ -419,6 +391,13 @@
            <widget class="QPushButton" name="refreshBtn">
             <property name="text">
              <string>网络检测</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="stopBtn">
+            <property name="text">
+             <string>停止检测</string>
             </property>
            </widget>
           </item>

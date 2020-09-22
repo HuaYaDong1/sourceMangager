@@ -65,7 +65,6 @@ private:
     void fillInTheDynamicData(QListWidget *ListWidget, int num);
     void fillInMainDynamicData(QListWidget *ListWidget, int num);
     void questionMessage();
-    void searchSourcesNumber();
     void searchUnnecessarySourcesNumber();
     void mainSourceSet();
 

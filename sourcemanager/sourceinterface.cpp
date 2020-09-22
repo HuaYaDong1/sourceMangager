@@ -185,7 +185,7 @@ QString sourceInterface::setPingToWidget(QString sourceName)
     QString str = QString("ping -c 1 -w 1 ")+url;
     qDebug()<<str;
 
-    QTextCodec *codec = QTextCodec::codecForName("GBK");
+    //QTextCodec *codec = QTextCodec::codecForName("GBK");
     ping.start(str);//执行ping
 
 
@@ -350,7 +350,7 @@ void sourceInterface::downloadFinish(QNetworkReply *reply)
 {
     //    qDebug()<<"file size :"<<reply->readAll().size();
     timer->stop();
-    qDebug()<<"all size: "<<allsize<<"  all time :"<<alltime;
+    qDebug()<<"all size: "<<allsize<<"  all time :"<<alltime << reply;
     if(alltime == 0){
         alltime = 1;
     }

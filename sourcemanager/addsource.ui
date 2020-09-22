@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>510</width>
-    <height>503</height>
+    <height>550</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -133,7 +133,7 @@
        <widget class="QComboBox" name="comboBox">
         <property name="minimumSize">
          <size>
-          <width>400</width>
+          <width>390</width>
           <height>30</height>
          </size>
         </property>

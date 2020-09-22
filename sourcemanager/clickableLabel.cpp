@@ -31,4 +31,5 @@ ClickableLabel::~ClickableLabel()
 void ClickableLabel::mousePressEvent(QMouseEvent* event)
 {
     emit clicked();
+    QWidget::mousePressEvent(event);
 }

@@ -38,8 +38,7 @@ sourceManager::sourceManager(QWidget *parent)
     connect(ui->changeBtn, SIGNAL(clicked()), this, SLOT(changeBtnClicked()));
     connect(ui->createSourceBtn, SIGNAL(clicked()), this, SLOT(createSourceBtnClicked()));
     connect(ui->stopBtn, SIGNAL(clicked()), this, SLOT(stopBtnClicked()));
-    connect(ui->deleteSourcePageBtn, SIGNAL(clicked()), this, SLOT(deleteSourcePageBtnClicked()));
-    connect(ui->testingUpdateBtn, SIGNAL(clicked()), this, SLOT(testingUpdateBtnClicked()));
+    connect(ui->stopBtn_1, SIGNAL(clicked()), this, SLOT(stopBtnClicked()));
     connect(ui->label_10, SIGNAL(clicked()), this, SLOT(UnnecessarySourcesShow()));
     connect(ui->label_11, SIGNAL(clicked()), this, SLOT(UnnecessarySourcesShow()));
 
@@ -57,16 +56,18 @@ sourceManager::sourceManager(QWidget *parent)
                                          SLOT(updateOverSlot(QString))
                                          );
 
-    //searchSourcesNumber();//搜查主源个数
     showMainSource(ui->listWidget);//主源页展示
     searchUnnecessarySourcesNumber();//搜查次源个数
     ui->stackedWidget_2->setCurrentIndex(0);
     ui->stackedWidget->setCurrentIndex(1);
     ui->stackedWidget_3->setCurrentIndex(1);
     ui->createSourceBtn->hide();
-    ui->deleteSourcePageBtn->hide();
     ui->page_3->hide();
-    //ui->comboBox->setFrame(QListWidget::NoFrame);
+    ui->stopBtn->hide();
+    ui->stopBtn_1->hide();
+    ui->setSourceBtn->hide();
+    ui->changeBtn->hide();
+
     selectWidget = ui->listWidget;
     UnnecessarySourcesSelect();
 
@@ -104,7 +105,7 @@ void sourceManager::downloadOverSlot(QString speed,QListWidget *Listwidget, int 
     while(Num != Listwidget->count())
     {
         sourceInformationWidget* pwig1 = static_cast<sourceInformationWidget*> (Listwidget->itemWidget(Listwidget->item(Num)));
-        qDebug()<<pwig1->ui->address_Check->text()<<"~~~~~~~~~~~~~~~~~~~~~";
+        qDebug()<<pwig1->ui->address_Check->text();
         if(!pwig1->ui->delay_Label->text().compare("无法连接") == 0)
         {
             QString address;
@@ -123,6 +124,12 @@ void sourceManager::downloadOverSlot(QString speed,QListWidget *Listwidget, int 
         qDebug()<<Num  << Listwidget->count()-1;
         Num=Num+2;
     }
+    if(Num == Listwidget->count()){
+        ui->stopBtn->hide();
+        ui->stopBtn_1->hide();
+        ui->refreshBtn->show();
+        ui->refreshBtn_2->show();
+    }
 }
 
 void sourceManager::downloadspeed(QString speed,QListWidget *Listwidget, int Num)
@@ -134,16 +141,12 @@ void sourceManager::downloadspeed(QString speed,QListWidget *Listwidget, int Num
 //主源页切换
 void sourceManager::pageMainSourceBtnClicked()
 {
-    //    qDebug()<<mainWidget->objectName();
     ui->stackedWidget_2->setCurrentIndex(0);
-    //    ui->stackedWidget->setCurrentIndex(mainSageCount+1);
     selectWidget = ui->listWidget;
-    //    ui->label->setText(mainWidget->objectName());
     ui->updateLabel->setText("");
-    ui->setSourceBtn->show();
+    //ui->setSourceBtn->show();
     ui->createSourceBtn->hide();
-    ui->deleteSourcePageBtn->hide();
-    ui->testingUpdateBtn->show();
+    ui->changeBtn->hide();
 }
 
 //次源页切换
@@ -152,56 +155,10 @@ void sourceManager::pageUnnecessaryBtnClicked()
     ui->stackedWidget_2->setCurrentIndex(1);
     ui->stackedWidget_3->setCurrentIndex(UnnecessarySageCount+1);
     selectWidget = UnnecessaryWidget;
-    ui->label->setText(UnnecessarySourceName);
     ui->updateLabel->setText("");
-    ui->setSourceBtn->hide();
+    //ui->setSourceBtn->hide();
     ui->createSourceBtn->show();
-    ui->deleteSourcePageBtn->show();
-    ui->testingUpdateBtn->hide();
-}
-
-//搜查主源个数,添加按钮，页面，及listwidget
-void sourceManager::searchSourcesNumber()
-{
-    //    mainSourceList = sourceinterface->getMainSourceName();
-    //    pageMainNum = mainSourceList.count();
-    //    mainSourceName = mainSourceList.at(0); //第一次副源页切换，当前页名字
-    //    ui->label->setText(mainSourceList.at(0));
-
-    //    QWidget * page[1024];
-    //    QListWidget * WidgetList[1024];
-    //    QPushButton *unnecessarySourceBtn[1024];
-
-    //    for(int i=0; i<pageMainNum; i++)
-    //    {
-    //        page[i] = new QWidget();
-    //        unnecessarySourceBtn[i] = new QPushButton();
-    //        ui->horizontalLayout->addWidget(unnecessarySourceBtn[i]);
-    //        ui->stackedWidget->addWidget(page[i]);
-    //        QVBoxLayout *verticalLayout = new QVBoxLayout(page[i]);
-    //        unnecessarySourceBtn[i]->setText(mainSourceList.at(i));
-
-    //        WidgetList[i] = new QListWidget(page[i]);
-    //        WidgetList[i]->setObjectName(mainSourceList.at(i));
-    //        ui->verticalLayout_4->addWidget(WidgetList[i]);
-    //        verticalLayout->addWidget(WidgetList[i]);
-    //        connect(unnecessarySourceBtn[i], &QPushButton::clicked, this, [=]()
-    //        {
-    //            ui->stackedWidget->setCurrentIndex(i+1);
-    //            ui->label->setText(mainSourceList.at(i));
-    //            selectWidget = WidgetList[i];
-    //            mainWidget = WidgetList[i];
-    //            mainSourceName = SourceList.at(i);
-    //            mainSageCount = i;
-    //            ui->updateLabel->setText("");
-    //        } );
-
-    //        selectWidget = WidgetList[0];
-    //        mainWidget = WidgetList[0];
-    //        qDebug()<<WidgetList[0]->objectName();
-    //        qDebug()<<mainSourceList.at(i);
-    //       // showMainSource(WidgetList[i], i);
-    //    }
+    ui->changeBtn->show();
 }
 
 //搜查次源个数,添加按钮，页面，及listwidget
@@ -237,7 +194,6 @@ void sourceManager::searchUnnecessarySourcesNumber()
         connect(unnecessarySourceBtn[i], &QPushButton::clicked, this, [=]()
         {
             ui->stackedWidget_3->setCurrentIndex(i+1);
-            ui->label->setText(SourceList.at(i));
             selectWidget = WidgetList[i];
             UnnecessaryWidget = WidgetList[i];
             UnnecessarySourceName = SourceList.at(i);
@@ -245,7 +201,6 @@ void sourceManager::searchUnnecessarySourcesNumber()
             ui->updateLabel->setText("");
             seletcPage = page[i];
             selectBtn = unnecessarySourceBtn[i];
-            qDebug()<<i+1<<"~~~~~~~~~~~~~~~~~~~~~~~~~~";
         } );
         connect(WidgetList[i],SIGNAL(itemClicked(QListWidgetItem*)),this,SLOT(selectDeleteIteam(QListWidgetItem*)));
         UnnecessaryWidget = WidgetList[0];
@@ -259,7 +214,6 @@ void sourceManager::searchUnnecessarySourcesNumber()
 void sourceManager::SourceBtnClicked()
 {
     ui->stackedWidget->setCurrentIndex(0);
-    ui->label->setText("sources.list");
     selectWidget = ui->listWidget;
 }
 
@@ -435,6 +389,10 @@ void sourceManager::fillInTheDynamicData(QListWidget *ListWidget, int num)
 //刷新按钮回调
 void sourceManager::refreshBtnClicked()
 {
+    ui->stopBtn->show();
+    ui->stopBtn_1->show();
+    ui->refreshBtn->hide();
+    ui->refreshBtn_2->hide();
     Nettestflag = true;
     qDebug()<<Nettestflag;
     qDebug()<<"~~~~~~~~刷新~~~~~~~~~~~~~~~~~:"<<selectWidget->objectName();
@@ -452,7 +410,6 @@ void sourceManager::refreshBtnClicked()
             QString address;
             if(selectWidget == ui->listWidget){ //区分是主源还是次源
                 address = sourceinterface->getMainSourceAddressList("/etc/apt/mainsources/"+pwig->ui->address_Check->text()+".list").at(0);
-                qDebug()<<address<<"!!!!!!!!!!!!!!!!!!!!!!!!!";
             }else{
                 address = pwig->ui->address_Check->text();
             }
@@ -490,7 +447,6 @@ void sourceManager::UnnecessarySourcesSelect()
     for(int i = 0; i < SourceList.count(); i++)
     {
         UnnecessarySources->widget[i]->alarmLabel0->setText(SourceList.at(i));
-        //      connect(UnnecessarySources->widget[i]->alarmLabel1,SIGNAL(clicked()), this,SLOT(deleteSourcePageBtnClicked()));
         //删除次源文件
         connect(UnnecessarySources->widget[i]->alarmLabel1, &QPushButton::clicked, this,[=]()
         {
@@ -514,7 +470,6 @@ void sourceManager::UnnecessarySourcesSelect()
                 ui->updateLabel->setText("删除源");
                 //删除 页与 按钮
                 delete selectBtn;
-                //seletcPage->hide();
                 delete seletcPage;
             }else if (reply == QMessageBox::No){
             }else{}
@@ -544,7 +499,6 @@ void sourceManager::UnnecessarySourcesSelect_listClickslot()
                                                                           itemWidget(UnnecessarySources->listWidget->item(num)));
 
     selectWidget = WidgetSelect[num];
-    ui->label->setText(pwig->alarmLabel0->text());
     ui->label_11->setText(pwig->alarmLabel0->text());
     UnnecessarySources->close();
     ui->stackedWidget_3->setCurrentIndex(num+1);
@@ -621,7 +575,6 @@ void sourceManager::changeBtnClicked()
 
     sourceChange << QVariant::fromValue(addSourcewidget->ui->textEdit->toPlainText());//新数据
     sourceChange << QVariant::fromValue("/etc/apt/sources.list.d/"+selectWidget->objectName());//文件
-    qDebug()<<"xxxxxxxxxxx"<<sourceChange;
     serviceInterface->asyncCall("changedSource", sourceChange);
     delete delete_item;
 
@@ -826,7 +779,6 @@ void sourceManager::createSourceBtnClicked()
         pageNum++;
 
         ui->stackedWidget_3->setCurrentIndex(i+1);
-        ui->label->setText(name);
         SourceList << name;
         selectWidget = WidgetList;
         ui->label_11->setText(name);
@@ -879,6 +831,10 @@ void sourceManager::createSourceBtnClicked()
 
 void sourceManager::stopBtnClicked()
 {
+    ui->stopBtn->hide();
+    ui->stopBtn_1->hide();
+    ui->refreshBtn->show();
+    ui->refreshBtn_2->show();
     Nettestflag = false;
     qDebug()<<Nettestflag;
 }
@@ -886,7 +842,6 @@ void sourceManager::stopBtnClicked()
 //删除当前源回调
 void sourceManager::deleteSourcePageBtnClicked()
 {
-    qDebug()<<"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
     QVariantList sourceFileName;
     QDBusInterface *serviceInterface = new QDBusInterface("com.softSource.manager",
                                                           "/com/softSource/Manager",
@@ -914,10 +869,6 @@ void sourceManager::deleteSourcePageBtnClicked()
     }else{}
 
     SourceList.removeAll(selectWidget->objectName());
-
-    qDebug() << selectWidget->objectName() <<"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~````";
-    qDebug() << SourceList.count() << "!~!~~!~!~!~!~!~!~!~"<< UnnecessarySageCount;
-
     delete UnnecessarySources->listWidget->takeItem(0);
     pageNum--;
 }
