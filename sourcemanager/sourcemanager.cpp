@@ -14,6 +14,7 @@
 #include "testingupdatethread.h"
 #include "createsourcewidget.h"
 #include "ui_createsourcewidget.h"
+#include "customstyle.h"
 
 
 sourceManager::sourceManager(QWidget *parent)
@@ -577,7 +578,7 @@ void sourceManager::UnnecessarySourcesSelect()
             sourceFileName<< QVariant::fromValue(UnnecessarySources->widget[i]->alarmLabel0->text());
             QMessageBox::StandardButton reply;
             reply = QMessageBox::question(this, tr("question"),
-                                          tr("delete 当前页面源 ?"),
+                                          tr("delete  选中源 ?"),
                                           QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
             if(reply == QMessageBox::Yes){
                 serviceInterface->asyncCall("deleteSourceFile", sourceFileName);
@@ -585,14 +586,16 @@ void sourceManager::UnnecessarySourcesSelect()
                 //删除 页与 按钮
                 delete selectBtn;
                 delete seletcPage;
+
+                SourceList.removeAll(selectWidget->objectName());
+                qDebug() << selectWidget->objectName() <<"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~````";
+                qDebug() << SourceList.count() << "!~!~~!~!~!~!~!~!~!~"<< UnnecessarySageCount;
+                delete UnnecessarySources->listWidget->takeItem(i);
+                pageNum--;
+                ui->stackedWidget_3->removeWidget(page[i]);
             }else if (reply == QMessageBox::No){
             }else{}
-            SourceList.removeAll(selectWidget->objectName());
-            qDebug() << selectWidget->objectName() <<"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~````";
-            qDebug() << SourceList.count() << "!~!~~!~!~!~!~!~!~!~"<< UnnecessarySageCount;
-            delete UnnecessarySources->listWidget->takeItem(i);
-            pageNum--;
-            ui->stackedWidget_3->removeWidget(page[i]);
+
         });
     }
 }
@@ -717,7 +720,7 @@ void sourceManager::questionMessage()
     {
         QMessageBox::StandardButton reply;
         reply = QMessageBox::question(this, tr("question"),
-                                      tr("delete ?"),
+                                      tr("delete 选中源?"),
                                       QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
         if(reply == QMessageBox::Yes){
             QDBusInterface *serviceInterface = new QDBusInterface("com.softSource.manager",
@@ -1074,19 +1077,18 @@ void sourceManager::testingUpdateBtnClicked()
 
 void sourceManager::paintEvent(QPaintEvent *event)
 {
+    Q_UNUSED(event);
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);  // 反锯齿;
     QStyleOption opt;
     opt.init(this);
     painter.setBrush(opt.palette.color(QPalette::Base));
-
     if(QColor(255,255,255) == opt.palette.color(QPalette::Base) || QColor(248,248,248) == opt.palette.color(QPalette::Base))
     {
         painter.setBrush(QColor(255,255,255));
     }else{
         painter.setBrush(QColor(34,34,34));
     }
-
     painter.setPen(Qt::transparent);
     QRect rect = this->rect();
     rect.setWidth(rect.width() - 0);
@@ -1097,7 +1099,7 @@ void sourceManager::paintEvent(QPaintEvent *event)
         painterPath.addRoundedRect(rect, 7, 7);
         painter.drawPath(painterPath);
     }
-    QWidget::paintEvent(event);
+//    QWidget::paintEvent(event);
 }
 
 

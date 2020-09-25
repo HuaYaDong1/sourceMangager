@@ -22,6 +22,7 @@ SOURCES += \
     addsource.cpp \
     clickableLabel.cpp \
     createsourcewidget.cpp \
+    customstyle.cpp \
     delayrefreshthread.cpp \
     main.cpp \
     selectform.cpp \
@@ -36,6 +37,7 @@ HEADERS += \
     addsource.h \
     clickableLabel.h \
     createsourcewidget.h \
+    customstyle.h \
     delayrefreshthread.h \
     selectform.h \
     seleteframe.h \

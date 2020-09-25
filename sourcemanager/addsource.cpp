@@ -1,6 +1,7 @@
 #include "addsource.h"
 #include "ui_addsource.h"
 #include <QDebug>
+#include "customstyle.h"
 
 addSource::addSource(QWidget *parent) :
     QDialog(parent),
@@ -18,6 +19,7 @@ addSource::addSource(QWidget *parent) :
     branchStr = "main";
     isAddBtnClicked = false;
     versionStr = "v10";
+    ui->comboBox->setStyle(new CustomStyle());
 
     connect(ui->add_lineEdit, SIGNAL(textChanged(const QString &)), this,SLOT(on_add_lineEdit_textChanged(const QString &)));
     connect(ui->version_lineEdit, SIGNAL(textChanged(const QString &)), this,SLOT(on_version_lineEdit_textChanged(const QString &)));
