@@ -603,7 +603,7 @@ void sourceManager::UnnecessarySourcesSelect()
 void sourceManager::UnnecessarySourcesShow()
 {
     QPointF position = this->pos();
-    UnnecessarySources->move(position.x()+29,position.y()+150);
+    UnnecessarySources->move(position.x()+33,position.y()+156);
     UnnecessarySources->show();
 }
 
