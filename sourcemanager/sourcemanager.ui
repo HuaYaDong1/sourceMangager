@@ -139,7 +139,7 @@
    <item row="1" column="0">
     <widget class="QStackedWidget" name="stackedWidget_2">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="mainPage">
       <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -155,31 +155,10 @@
           <string notr="true"/>
          </property>
          <layout class="QGridLayout" name="gridLayout_2">
-          <item row="0" column="3">
-           <widget class="QLabel" name="label_7">
+          <item row="0" column="10">
+           <widget class="QPushButton" name="stopBtn_1">
             <property name="text">
-             <string/>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="4">
-           <widget class="QLabel" name="label_8">
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_4">
-            <property name="text">
-             <string>设为主源:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="5">
-           <widget class="QLabel" name="label_9">
-            <property name="text">
-             <string/>
+             <string>停止检测</string>
             </property>
            </widget>
           </item>
@@ -196,15 +175,35 @@
             </property>
            </spacer>
           </item>
-          <item row="0" column="7">
+          <item row="0" column="8">
            <widget class="QPushButton" name="updateBtn_2">
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>30</height>
+             </size>
+            </property>
             <property name="text">
              <string>更新仓库</string>
             </property>
            </widget>
           </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>设为主源:</string>
+            </property>
+           </widget>
+          </item>
           <item row="0" column="2">
            <widget class="QLabel" name="label_6">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QLabel" name="label_7">
             <property name="text">
              <string/>
             </property>
@@ -217,17 +216,34 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="8">
+          <item row="0" column="4">
+           <widget class="QLabel" name="label_8">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="9">
            <widget class="QPushButton" name="refreshBtn_2">
             <property name="text">
              <string>网络检测</string>
             </property>
            </widget>
           </item>
-          <item row="0" column="9">
-           <widget class="QPushButton" name="stopBtn_1">
+          <item row="0" column="5">
+           <widget class="QLabel" name="label_9">
             <property name="text">
-             <string>停止检测</string>
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="7">
+           <widget class="myProgressbar" name="widget_3" native="true">
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>30</height>
+             </size>
             </property>
            </widget>
           </item>
@@ -393,6 +409,22 @@
            </widget>
           </item>
           <item>
+           <widget class="myProgressbar" name="widget" native="true">
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QPushButton" name="updateBtn">
             <property name="text">
              <string>更新仓库</string>
@@ -439,12 +471,18 @@
   <customwidget>
    <class>ClickableLabel</class>
    <extends>QLabel</extends>
-   <header location="global">clickableLabel.h</header>
+   <header>clickableLabel.h</header>
   </customwidget>
   <customwidget>
    <class>selectForm</class>
    <extends>QWidget</extends>
-   <header location="global">selectform.h</header>
+   <header>selectform.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>myProgressbar</class>
+   <extends>QWidget</extends>
+   <header location="global">myprogressbar.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

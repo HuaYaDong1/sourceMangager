@@ -25,6 +25,7 @@ SOURCES += \
     customstyle.cpp \
     delayrefreshthread.cpp \
     main.cpp \
+    myprogressbar.cpp \
     selectform.cpp \
     seleteframe.cpp \
     setAlarmRepeatDialog.cpp \
@@ -39,6 +40,7 @@ HEADERS += \
     createsourcewidget.h \
     customstyle.h \
     delayrefreshthread.h \
+    myprogressbar.h \
     selectform.h \
     seleteframe.h \
     setAlarmRepeatDialog.h \

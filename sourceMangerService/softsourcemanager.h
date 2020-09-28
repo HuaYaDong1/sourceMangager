@@ -7,6 +7,14 @@
 #include <QProcess>
 #include <QDBusMessage>
 
+#include <QApt/Globals>
+#include <QApt/Backend>
+#include <QApt/Transaction>
+#include <QApt/DownloadProgress>
+#include <QApt/SourcesList>
+#include <QApt/Package>
+#include <QApt/DependencyInfo>
+
 class softSourceManager :public QObject
 {
 
@@ -14,6 +22,9 @@ class softSourceManager :public QObject
     Q_CLASSINFO("D-Bus Interface", "com.softSource.manager.interface")
 public:
     softSourceManager();
+
+    QApt::Backend *m_backend;
+    QApt::Transaction *m_trans;
 
 public slots:
     void addSource(QVariantList sourceInfo);
@@ -26,6 +37,8 @@ public slots:
 
     void addMainSource(QVariantList sourceInfo);
     void delMainSource(QVariantList sourceInfo);
+
+    void progressChanged(int progress);
 
 signals:
     void updateOver(QString arg);

@@ -45,6 +45,7 @@ private slots:
     void pageMainSourceBtnClicked();
     void pageUnnecessaryBtnClicked();
     void updateBtnClicked();
+    void updateBtn_2Clicked();
     void updateOverSlot(QString );
     void setSourceBtnClicked();
     void createSourceBtnClicked();
@@ -79,6 +80,7 @@ private:
     //    QPushButton *unnecessarySourceBtn[1024];
 
     bool IsMainSource = true;
+    bool IsUpdateBtn = true;
 
     QListWidgetItem *delete_item;
     QListWidget  *selectWidget;

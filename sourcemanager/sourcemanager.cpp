@@ -27,9 +27,11 @@ sourceManager::sourceManager(QWidget *parent)
     changeFlag = 0;
     UnnecessarySageCount = 0;
 
+    ui->widget->hide();
+    ui->widget_3->hide();
+
     style_settings = new QGSettings("org.ukui.style");
     connect(style_settings,SIGNAL(changed(QString)),this,SLOT(style_changed(QString)));
-
 
     QPalette paletteBtn = ui->pageMainSourceBtn->palette();
     ui->pageUnnecessaryBtn->setPalette(paletteBtn);
@@ -49,7 +51,7 @@ sourceManager::sourceManager(QWidget *parent)
     connect(ui->pageMainSourceBtn, SIGNAL(clicked()), this, SLOT(pageMainSourceBtnClicked()));
     connect(ui->pageUnnecessaryBtn, SIGNAL(clicked()), this, SLOT(pageUnnecessaryBtnClicked()));
     connect(ui->updateBtn, SIGNAL(clicked()), this, SLOT(updateBtnClicked()));
-    connect(ui->updateBtn_2, SIGNAL(clicked()), this, SLOT(updateBtnClicked()));
+    connect(ui->updateBtn_2, SIGNAL(clicked()), this, SLOT(updateBtn_2Clicked()));
     connect(ui->setSourceBtn, SIGNAL(clicked()), this, SLOT(setSourceBtnClicked()));
     connect(ui->changeBtn, SIGNAL(clicked()), this, SLOT(changeBtnClicked()));
     connect(ui->createSourceBtn, SIGNAL(clicked()), this, SLOT(createSourceBtnClicked()));
@@ -661,7 +663,7 @@ void sourceManager::changeBtnClicked()
         addSourcewidget->ui->deb->setChecked(false);
         addSourcewidget->ui->debsrc->setChecked(true);
     }
-qDebug()<<"------5-----";
+    qDebug()<<"------5-----";
     for(int i=1; i<Address.count(); i++)//网址
     {
         QRegExp rx("(https?|ftp|file)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]");//正则表达式判断网址格式是否正确
@@ -691,7 +693,7 @@ qDebug()<<"------5-----";
             addSourcewidget->ui->suffix_lineEdit->setText(branch+" ");
         }
     }
-qDebug()<<"-------7----";
+    qDebug()<<"-------7----";
     addSourcewidget->exec();
     if(!addSourcewidget->isAddBtnClicked)
     {
@@ -702,7 +704,7 @@ qDebug()<<"-------7----";
     sourceChange << QVariant::fromValue("/etc/apt/sources.list.d/"+selectWidget->objectName());//文件
     serviceInterface->asyncCall("changedSource", sourceChange);
     delete delete_item;
-qDebug()<<"------8-----";
+    qDebug()<<"------8-----";
     addForListwidget(selectWidget, addSourcewidget->ui->textEdit->toPlainText());
     changeFlag = 0;
 }
@@ -855,6 +857,11 @@ void sourceManager::addForListwidget(QListWidget *ListWidget, QString address)
 //apt-get update
 void sourceManager::updateBtnClicked()
 {
+    IsUpdateBtn = true;
+    ui->updateBtn->hide();
+    ui->widget->show();
+    ui->widget->progressValue = 0;
+
     QDBusInterface *serviceInterface = new QDBusInterface("com.softSource.manager",
                                                           "/com/softSource/Manager",
                                                           "com.softSource.manager.interface",
@@ -865,14 +872,52 @@ void sourceManager::updateBtnClicked()
         return;
     }
     serviceInterface->asyncCall("updateSource");
-    ui->updateLabel->setText("正在更新");
+    //    ui->updateLabel->setText("正在更新");
+}
+
+void sourceManager::updateBtn_2Clicked()
+{
+    IsUpdateBtn = false;
+    ui->updateBtn_2->hide();
+    ui->widget_3->show();
+    ui->widget_3->progressValue = 0;
+
+    QDBusInterface *serviceInterface = new QDBusInterface("com.softSource.manager",
+                                                          "/com/softSource/Manager",
+                                                          "com.softSource.manager.interface",
+                                                          QDBusConnection::systemBus());
+    if(!serviceInterface->isValid())
+    {
+        qDebug() << "Service Interface: " << qPrintable(QDBusConnection::systemBus().lastError().message());
+        return;
+    }
+    serviceInterface->asyncCall("updateSource");
+    //    ui->updateLabel->setText("正在更新");
 }
 
 //接收后台执行成功返回信号
 void sourceManager::updateOverSlot(QString str)
 {
-    qDebug() << "更新结束"<<str;
-    ui->updateLabel->setText(str);
+
+    qDebug()<<str.toInt()<<"-----------";
+    if( str.toInt() > 100){
+        str = "100";
+    }
+    if(IsUpdateBtn){                                     
+        ui->widget->progressValue = str.toInt();
+        ui->widget->update();
+        if(!str.compare("100")){
+            ui->widget->hide();
+            ui->updateBtn->show();
+        }
+    }else{
+        ui->widget_3->progressValue = str.toInt();
+        ui->widget_3->update();
+        if(!str.compare("100")){
+            ui->widget_3->hide();
+            ui->updateBtn_2->show();
+        }
+    }
 }
 
 //设置主源
@@ -1099,7 +1144,7 @@ void sourceManager::paintEvent(QPaintEvent *event)
         painterPath.addRoundedRect(rect, 7, 7);
         painter.drawPath(painterPath);
     }
-//    QWidget::paintEvent(event);
+    //    QWidget::paintEvent(event);
 }
 
 

@@ -1,9 +1,13 @@
 
 QT += dbus core
 
-CONFIG += c++11 console
+CONFIG += c++11 console link_pkgconfig
 CONFIG -= app_bundle
 TARGET  = softsourcemanager
+
+INCLUDEPATH = /usr/include/qapt
+
+LIBS += -lQApt
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings

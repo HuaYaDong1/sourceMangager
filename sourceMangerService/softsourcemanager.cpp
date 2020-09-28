@@ -3,7 +3,8 @@
 
 softSourceManager::softSourceManager()
 {
-
+    m_backend = new QApt::Backend(this);
+    m_backend->init();
 }
 void softSourceManager::addSource(QVariantList sourceInfo)
 {
@@ -40,17 +41,20 @@ void softSourceManager::deleteSource(QVariantList sourceInfo)
 
 void softSourceManager::updateSource()
 {
-    qDebug()<<"开始更新";
-    QProcess process;
-    process.start("apt-get update");
-    process.waitForFinished(-1);
-    qDebug()<<"更新完成";
+    m_trans = m_backend->updateCache();
+    m_trans->run();
+    connect(m_trans, SIGNAL(progressChanged(int)),
+            this, SLOT(progressChanged(int)));
 
-    QDBusMessage msg = QDBusMessage::createSignal("/citos/client/path", "com.client.test","updateOver");
-    msg<<"更新成功";
-    bool sendResult = QDBusConnection::systemBus().send(msg);
-    qDebug()<<sendResult;
 }
+
+void softSourceManager::progressChanged(int progress)
+{
+    QDBusMessage msg = QDBusMessage::createSignal("/citos/client/path", "com.client.test","updateOver");
+    msg<<QString::number(progress);
+    QDBusConnection::systemBus().send(msg);
+}
+
 void softSourceManager::setMainSource(QVariantList sourceFileName)
 {
     qDebug()<<"设置开始";
@@ -200,7 +204,7 @@ void softSourceManager::delMainSource(QVariantList sourceInfo)
     if(strAll.contains("\n")){
         strList = strAll.split("\n");
     }
-        QString sourcePath = "/etc/apt/sources.list";
+    QString sourcePath = "/etc/apt/sources.list";
     QFile writeReadFile(sourcePath);
     if(!writeReadFile.open(QIODevice::ReadOnly)){
         qDebug()<<"open failed!";
@@ -224,27 +228,27 @@ void softSourceManager::delMainSource(QVariantList sourceInfo)
     qDebug()<<strList.count();
     QTextStream writeStream(&writeFile);
     for(int i=0;i<strlist2.count();i++){
-//        for(int j=0;j<strList.count();j++){
-            if((strlist2.at(i).compare(strList.at(0))) == 0 && strList.at(0).compare("") != 0)    //"123456789"是要修改的内容
+        //        for(int j=0;j<strList.count();j++){
+        if((strlist2.at(i).compare(strList.at(0))) == 0 && strList.at(0).compare("") != 0)    //"123456789"是要修改的内容
+        {
+            qDebug()<<i<<"----";
+            QString tempStr=strlist2.at(i);
+            tempStr.replace(0,tempStr.length(),"");   //"Hello!"是要替换的内容
+            writeStream<<tempStr;
+        }
+        //如果没有找到要替换的内容，照常写入
+        else
+        {
+            if(i==strlist2.count()-1)
             {
-                qDebug()<<i<<"----";
-                QString tempStr=strlist2.at(i);
-                tempStr.replace(0,tempStr.length(),"");   //"Hello!"是要替换的内容
-                writeStream<<tempStr;
+                writeStream<<strlist2.at(i);
             }
-            //如果没有找到要替换的内容，照常写入
             else
             {
-                if(i==strlist2.count()-1)
-                {
-                    writeStream<<strlist2.at(i);
-                }
-                else
-                {
-                    writeStream<<strlist2.at(i)<<'\n';
-                }
+                writeStream<<strlist2.at(i)<<'\n';
             }
-//        }
+        }
+        //        }
     }
     writeFile.close();
 }
