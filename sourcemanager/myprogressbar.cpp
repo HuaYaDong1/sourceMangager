@@ -7,6 +7,7 @@ myProgressbar::myProgressbar(QWidget *parent) : QWidget(parent)
 
 void myProgressbar::paintEvent(QPaintEvent *event)
 {
+    Q_UNUSED(event);
     QPainter painter(this);
     QStyleOptionComplex option;
 
