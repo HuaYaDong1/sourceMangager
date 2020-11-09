@@ -1,6 +1,6 @@
 
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Upstream-Name: sourcemanager
+Upstream-Name: kylin-software-properties
 Upstream-Contact: huayadong <huayadong@kylinos.cn>
 
 Files: *
