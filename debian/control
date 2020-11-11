@@ -4,11 +4,16 @@ Section: universe/admin
 Priority: optional
 Build-Depends: debhelper,
                qtbase5-dev,
+               libxml2-dev,
+               libxml2,
+               libqt5svg5-dev,
                libglib2.0-dev,
                qttools5-dev-tools,
-	       libgsettings-qt-dev,
+               qtchooser,
+               libgsettings-qt-dev,
                libapt-pkg-dev,
-               libqapt-dev
+               libqapt-dev,
+               libqt5dbus5,
 Standards-Version: 4.1.3
 
 Package: kylin-software-properties

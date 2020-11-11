@@ -53,7 +53,6 @@ void systemdtimermanager::updateTimerFile()
     process.start(restartShell);
     process.waitForFinished(-1);
 
-
 }
 bool systemdtimermanager::parseConfig(QString filename)
 {

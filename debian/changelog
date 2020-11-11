@@ -1,4 +1,18 @@
-kylin-software-properties (0.0.1-1) V101; urgency=medium
+kylin-software-properties (0.0.1-4) v100; urgency=medium
+
+  * New upstream release.
+    - remove depends qt5-qmake-bin
+
+ -- wanghailiang <wanghailiang@kylinos.cn>  Tue, 10 Nov 2020 09:32:39 +0800
+
+kylin-software-properties (0.0.1-2) v100; urgency=medium
+
+  * New upstream release.
+    add depends qmake
+
+ -- wanghailiang <wanghailiang@kylinos.cn>  Tue, 10 Nov 2020 09:15:52 +0800
+
+kylin-software-properties (0.0.1-1) v100; urgency=medium
 
   * Initial release. 
 
