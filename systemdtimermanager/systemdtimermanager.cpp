@@ -1,18 +1,31 @@
 #include "systemdtimermanager.h"
 #include <syslog.h>
 #include <QDebug>
+#include <QDir>
 systemdtimermanager::systemdtimermanager(QObject *parent) : QObject(parent)
 {
     QFileSystemWatcher *fileWatch = new QFileSystemWatcher();
     fileWatch->addPath(CONFIG_FILE_PATH);
     connect(fileWatch, SIGNAL(fileChanged(QString)),this,SLOT(fileUpdated(QString)));
-    updateTimerFile();
+    if(!timerIsUpdate()){
+        updateTimerFile();
+    }
     qDebug()<<"1111";
+}
+bool systemdtimermanager::timerIsUpdate()
+{
+    QFileInfo fileinfo("/usr/lib/systemd/system/updateTime.timer");
+    if(fileinfo.isFile())
+    {
+        return true;
+    }
+    else{
+        return false;
+    }
 }
 void systemdtimermanager::fileUpdated(QString path)
 {
     Q_UNUSED(path);
-    qDebug()<<"2222222";
     syslog(LOG_ERR,"------file changed ---------\n");
     updateTimerFile();
 }

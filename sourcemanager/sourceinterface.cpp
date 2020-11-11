@@ -67,7 +67,6 @@ QStringList sourceInterface::getSourceName()
 
 QStringList sourceInterface::getMainSourceAddressList(QString fileName)
 {
-
     QStringList sourceList;
     QFile file(fileName);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
