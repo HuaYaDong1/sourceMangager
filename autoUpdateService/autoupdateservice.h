@@ -7,7 +7,7 @@
 #include <QApt/Transaction>
 #include <QApt/Package>
 
-#include <QTime>
+#include <QTime>!-----------------------\
 #include <QDebug>
 
 

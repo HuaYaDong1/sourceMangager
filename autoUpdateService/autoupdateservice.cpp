@@ -3,7 +3,7 @@
 
 autoUpdateService::autoUpdateService(QObject *parent) : QObject(parent)
 {
-//    updateSource();
+    updateSource();
 
 
     syslog(LOG_ERR,"This is syslog err!-----------------------\n");

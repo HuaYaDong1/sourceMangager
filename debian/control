@@ -1,18 +1,19 @@
-Source: sourcemanager
+Source: kylin-software-properties
 Maintainer: kylin <kylin@kylinos.cn>
 Section: universe/admin
 Priority: optional
 Build-Depends: debhelper,
                qtbase5-dev,
-               libxml2-dev,
-               libxml2,
                libglib2.0-dev,
                qttools5-dev-tools,
+	       libgsettings-qt-dev,
+               libapt-pkg-dev,
+               libqapt-dev
 Standards-Version: 4.1.3
 
-Package: sourcemanager
+Package: kylin-software-properties
 Architecture: any
 Section: universe/admin
 Priority: optional
 Depends: ${shlibs:Depends}, 
-Description: 软件源管理器
+Description: kylin soft source manager
