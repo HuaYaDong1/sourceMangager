@@ -28,6 +28,7 @@ private:
     bool parseConfig(QString filename);
     void setTimerFile(QString fileName,QString timerStr);
     void updateTimerFile();
+    bool timerIsUpdate();
 
 private slots:
     void fileUpdated(QString path);
